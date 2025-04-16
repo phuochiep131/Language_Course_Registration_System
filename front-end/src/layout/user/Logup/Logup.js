@@ -29,45 +29,45 @@ function Register() {
         });
     };
 
-    // const onFinish = (values) => {
+    const onFinish = (values) => {
 
-    //     axios.post(`http://localhost:3005/api/auth/register`, {
-    //         name: values.name,
-    //         email: values.email,
-    //         username: values.username,
-    //         password: values.password
-    //     }, {
-    //         withCredentials: true
-    //     })
-    //         .then(response => {
-    //             console.log(response.data);
-    //             setTimeout(() => {
-    //                 successMessage();
-    //             }, 1000)
-    //             setSpinning(true);
-    //             setTimeout(() => {
-    //                 setSpinning(false);
+        axios.post(`http://localhost:3005/api/auth/register`, {
+            fullname: values.name,
+            email: values.email,
+            username: values.username,
+            password: values.password
+        }, {
+            withCredentials: true
+        })
+            .then(response => {
+                console.log(response.data);
+                setTimeout(() => {
+                    successMessage();
+                }, 1000)
+                setSpinning(true);
+                setTimeout(() => {
+                    setSpinning(false);
 
-    //                 const stateData = {
-    //                     action: "register",
-    //                     username: values.username,
-    //                     password: values.password
-    //                 }
+                    const stateData = {
+                        action: "register",
+                        username: values.username,
+                        password: values.password
+                    }
 
-    //                 navigate('/login', { state: stateData });
-    //             }, 2000);
-    //         })
-    //         .catch(error => {
-    //             // console.error('Error fetching data:', error);
-    //             setTimeout(() => {
-    //                 errorMessage();
-    //             }, 1000)
-    //             setSpinning(true);
-    //             setTimeout(() => {
-    //                 setSpinning(false);
-    //             }, 2000);
-    //         });
-    // };
+                    navigate('/login', { state: stateData });
+                }, 2000);
+            })
+            .catch(error => {
+                // console.error('Error fetching data:', error);
+                setTimeout(() => {
+                    errorMessage();
+                }, 1000)
+                setSpinning(true);
+                setTimeout(() => {
+                    setSpinning(false);
+                }, 2000);
+            });
+    };
 
     return (
         <div className="Logup">
@@ -79,7 +79,7 @@ function Register() {
                 initialValues={{
                     remember: true,
                 }}
-                // onFinish={onFinish}
+                onFinish={onFinish}
                 style={{ width: 350 }}
             >
                 <Form.Item >
