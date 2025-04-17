@@ -4,7 +4,7 @@ import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input, message, Spin } from 'antd';
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from 'axios';
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 function Login() {
 
@@ -31,44 +31,47 @@ function Login() {
         });
     };
 
-    // const onFinish = (values) => {
+    const onFinish = (values) => {
 
-    //     axios.post(`http://localhost:3005/api/auth/login`, {
-    //         username: values.username,
-    //         password: values.password
-    //     }, {
-    //         withCredentials: true
-    //     })
-    //         .then(response => {
-    //             console.log(response.data);
-    //             setTimeout(() => {
-    //                 successMessage();
-    //             }, 500)
-    //             setSpinning(true);
-    //             setTimeout(() => {
-    //                 setSpinning(false);
-    //                 if(stateData?.action === "redirect"){
-    //                     navigate(stateData.url);
-    //                 } else {
-    //                     navigate("/");
-    //                 }
-    //             }, 1500);
-    //         })
-    //         .catch(error => {
-    //             // console.error('Error fetching data:', error);
-    //             setTimeout(() => {
-    //                 errorMessage();
-    //             }, 1000)
-    //             setSpinning(true);
-    //             setTimeout(() => {
-    //                 setSpinning(false);
-    //             }, 2000);
-    //         });
-    // };
+        console.log(values.username)
+        console.log(values.password)
+        
+        axios.post(`http://localhost:3005/api/auth/login`, {
+            username: values.username,
+            password: values.password
+        }, {
+            withCredentials: true
+        })
+            .then(response => {
+                console.log(response.data);
+                setTimeout(() => {
+                    successMessage();
+                }, 500)
+                setSpinning(true);
+                setTimeout(() => {
+                    setSpinning(false);
+                    if(stateData?.action === "redirect"){
+                        navigate(stateData.url);
+                    } else {
+                        navigate("/");
+                    }
+                }, 1500);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                setTimeout(() => {
+                    errorMessage();
+                }, 1000)
+                setSpinning(true);
+                setTimeout(() => {
+                    setSpinning(false);
+                }, 2000);
+            });
+    };
 
-    useEffect(() => {
-        // console.log(stateData);
-    }, [])
+    // useEffect(() => {
+    //     // console.log(stateData);
+    // }, [])
 
     return (
         <div className="Login">
@@ -80,7 +83,7 @@ function Login() {
                 initialValues={{
                     remember: true,
                 }}
-                // onFinish={onFinish}
+                onFinish={onFinish}
                 style={{ width: 350 }}
             >
                 <Form.Item >
