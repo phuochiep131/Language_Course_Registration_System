@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import "./Header.css";
 
 import logo from "../../imgs/logo.png";
-//import avt from "../../imgs/avt.jpg";
 import axios from "axios";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
@@ -26,18 +25,6 @@ function Header() {
         });
 }
 
-  // const handleLogout = () => {
-  //   axios
-  //     .get(`http://localhost:3005/api/auth/logout`, { withCredentials: true })
-  //     .then(() => {
-  //       localStorage.removeItem("currentUser");
-  //       setCurrentUser(null);
-  //       window.location.reload();
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
-  // };
   const handleLogout = () => {
     axios.get(`http://localhost:3005/api/auth/logout`, {
         withCredentials: true
@@ -60,23 +47,6 @@ const handleLoginClick = () => {
 
   navigate('/login', { state: stateData });
 }
-
-  // const handleFakeLogin = () => {
-  //   const fakeUser = {
-  //     name: "Nguyễn Duy Tín",
-  //     avatar: avt,
-  //     role: "Admin",
-  //   };
-  //   localStorage.setItem("currentUser", JSON.stringify(fakeUser));
-  //   setCurrentUser(fakeUser);
-  // };
-
-  // const handleFakeLogout = () => {
-  //   localStorage.removeItem("currentUser");
-  //   setPopupDisplay(false); // Tắt popup
-  //   navigate("/"); // điều hướng về trang chủ
-  //   setCurrentUser(null);
-  // };
 
   useEffect(() => {
     fecthUserData();
