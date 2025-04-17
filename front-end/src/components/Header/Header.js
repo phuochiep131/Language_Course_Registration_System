@@ -113,7 +113,7 @@ const handleLoginClick = () => {
                 <div className="avatar_popup_name">
                   <img src={currentUser.avatar} alt="" />
                   <div>
-                    <h2>{currentUser.name}</h2>
+                    <h2>{currentUser.fullname}</h2>
                     <span
                       className={
                         currentUser.role === "Admin" ? "badge-admin" : ""
