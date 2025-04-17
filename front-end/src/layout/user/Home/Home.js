@@ -5,7 +5,7 @@ import banner3 from "../../../imgs/banner3.png";
 import "./Home.css";
 import { Spin, Carousel } from "antd";
 import { useEffect, useState } from "react";
-import axios from "axios";
+//import axios from "axios";
 
 import CourseDetailModal from "../CourseDetailModal/CourseDetailModal";
 
@@ -15,7 +15,7 @@ function Home() {
   const [selectedCourse, setSelectedCourse] = useState(null);
 
   const [featuredCourses, setFeaturedCourses] = useState([]);
-  const [featuredTeachers, setFeaturedTeachers] = useState([]);
+  //const [featuredTeachers, setFeaturedTeachers] = useState([]);
   const [spinning, setSpinning] = useState(false);
 
   // const fetchData = async () => {

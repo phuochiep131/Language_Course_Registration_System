@@ -16,7 +16,7 @@ connect();
 
 
 app.use('/api/auth', require('./routes/auth'))
-//app.use('/api', require('./routes/user')); 
+app.use('/api/user', require('./routes/user'));
 
 
 
