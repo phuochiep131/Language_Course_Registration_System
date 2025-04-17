@@ -5,4 +5,4 @@ const StudyLocationSchema = new mongoose.Schema({
   study_location: { type: String }
 });
 
-module.exports = mongoose.model('StudyLocation', StudyLocationSchema);
+module.exports = mongoose.model('Study_Location', StudyLocationSchema);

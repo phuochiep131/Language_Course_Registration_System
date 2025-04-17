@@ -8,4 +8,4 @@ const RegistrationCourseSchema = new mongoose.Schema({
   enrollment_date: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('RegistrationCourse', RegistrationCourseSchema);
+module.exports = mongoose.model('Registration_Course', RegistrationCourseSchema);

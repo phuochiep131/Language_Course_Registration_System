@@ -123,7 +123,7 @@ const handleLoginClick = () => {
                     </span>
                   </div>
                 </div>
-                {currentUser.role === "Admin" && (
+                {currentUser.role === "admin" && (
                   <a href="/admin">
                     <ion-icon name="settings-outline"></ion-icon>
                     <span>Admin Dashboard</span>
