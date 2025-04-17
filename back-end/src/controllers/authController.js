@@ -5,7 +5,7 @@ const config = require('../config/jwt');
 
 const register = async (req, res) => {
 
-    const { username, password, fullname, email} = req.body;
+    const { username, password, fullname, email, role, avatar} = req.body;
 
     try {
         // Kiểm tra xem người dùng đã tồn tại hay chưa
@@ -22,7 +22,9 @@ const register = async (req, res) => {
             username,
             password: hashedPassword,
             email,
-            fullname
+            fullname,
+            role: role ? role : 'student',
+            avatar: avatar ? avatar : "https://cdn-icons-png.flaticon.com/512/8792/8792047.png"
         });
 
         await newUser.save();
