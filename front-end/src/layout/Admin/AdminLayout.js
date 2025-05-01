@@ -15,6 +15,7 @@ import axios from 'axios';
 // Các component giả định
 // import Overview from './Overview';
 import UserManager from './UserManager/UserManager';
+import UpdateUser from './UserManager/UpdateUser';
 // import CourseManager from './CourseManager/CourseManager';
 // import TeacherManager from './TeacherManager/TeacherManager';
 // import ScheduleManager from './ScheduleManager/ScheduleManager';
@@ -87,6 +88,7 @@ const AdminLayout = () => {
                         <Routes>
                             {/* <Route path="/" element={<Overview />} /> */}
                             <Route path="users" element={<UserManager />} />
+                            <Route path="users/update/:id" element={<UpdateUser />} />
                             {/* <Route path="courses" element={<CourseManager />} /> */}
                             {/* <Route path="teachers" element={<TeacherManager />} /> */}
                             {/* <Route path="schedules" element={<ScheduleManager />} /> */}
