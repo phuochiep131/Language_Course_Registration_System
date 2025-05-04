@@ -71,8 +71,97 @@ const getCurrentUser = async (req, res) => {
     }
 };
 
+const deleteUsersByIds = async (req, res) => {
+    try {
+        // Kiểm tra xem req.user đã được đặt từ middleware xác thực hay chưa
+        if (!req.user) {
+            return res.status(401).json({ message: 'Unauthorized - Invalid token' });
+        }
+
+        // Lấy danh sách id người dùng từ request body
+        const { userIds } = req.body;
+
+        // Kiểm tra xem userIds có đúng định dạng hay không
+        if (!Array.isArray(userIds) || userIds.some(id => !id.match(/^[0-9a-fA-F]{24}$/))) {
+            return res.status(400).json({ message: 'Invalid user IDs format' });
+        }
+
+        // Kiểm tra xem các người dùng có tồn tại hay không
+        const users = await User.find({ _id: { $in: userIds } });
+
+        if (users.length !== userIds.length) {
+            return res.status(404).json({ message: 'One or more users not found' });
+        }
+
+        // Xoá các người dùng khỏi cơ sở dữ liệu
+        await User.deleteMany({ _id: { $in: userIds } });
+
+        // Trả về thông báo thành công
+        res.json({ message: 'Users deleted successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
+const updateUserById = async (req, res) => {
+    try {
+        // Kiểm tra xem req.user đã được đặt từ middleware xác thực hay chưa
+        if (!req.user) {
+            return res.status(401).json({ message: 'Unauthorized - Invalid token' });
+        }
+
+        const userId = req.params.id;
+
+        if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
+            return res.status(400).json({ message: 'Invalid user ID format' });
+        }
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        if (req.body.fullname) {
+            user.fullname = req.body.fullname;
+        }
+        
+        if (req.body.email) {
+            user.email = req.body.email;
+        }
+
+        if (req.body.username) {
+            user.username = req.body.username;
+        }
+
+        if (req.body.password) {
+            user.password = await bcrypt.hash(req.body.password, 10);
+        }
+
+        if (req.body.role) {
+            user.role = req.body.role;
+        }
+
+        if (req.body.avatar) {
+            user.avatar = req.body.avatar;
+        }
+
+        // Lưu các thay đổi
+        await user.save();
+
+        // Trả về thông tin người dùng sau khi cập nhật
+        res.json(user);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
 module.exports = {
     getAllUsers,
     getUserById,
-    getCurrentUser
+    getCurrentUser,
+    updateUserById,
+    deleteUsersByIds
 };

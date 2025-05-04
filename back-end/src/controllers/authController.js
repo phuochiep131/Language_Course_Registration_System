@@ -23,7 +23,7 @@ const register = async (req, res) => {
             password: hashedPassword,
             email,
             fullname,
-            role: role ? role : 'student',
+            role: role ? role : 'Student',
             avatar: avatar ? avatar : "https://cdn-icons-png.flaticon.com/512/8792/8792047.png"
         });
 
@@ -39,7 +39,7 @@ const register = async (req, res) => {
 const login = async (req, res) => {
     const { username, password } = req.body;
 
-    console.log("Login attempt:", username)
+    //console.log("Login attempt:", username)
 
     try {
         const user = await User.findOne({ username });
@@ -52,7 +52,7 @@ const login = async (req, res) => {
 
         const secretKey = "LangCourse";
 
-        const token = jwt.sign({ user: { id: user._id, username: user.username} }, secretKey, {
+        const token = jwt.sign({ user: { id: user._id, username: user.username, role: user.role} }, secretKey, {
             expiresIn: '6h',
         });
         
