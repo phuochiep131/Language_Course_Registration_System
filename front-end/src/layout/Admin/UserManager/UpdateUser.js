@@ -57,7 +57,7 @@ function UpdateUser() {
     };
 
     const handleUpdateById = (newData) => {
-        axios.put(`http://localhost:3005/api/users/${id}`, newData, {
+        axios.put(`http://localhost:3005/api/user/${id}`, newData, {
             withCredentials: true
         })
             .then(response => {
@@ -111,12 +111,12 @@ function UpdateUser() {
                         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
 
                             const newUserData = {
-                                "name": values.name,
-                                "avatar": downloadURL,
                                 "username": values.username,
                                 "password": values.password,
+                                "email": values.email,
+                                "fullname": values.name,
                                 "role": values.role,
-                                "email": values.email
+                                "avatar": downloadURL
                             }
 
                             handleUpdateById(newUserData);
@@ -132,11 +132,11 @@ function UpdateUser() {
         } else {
             try {
                 const newUserData = {
-                    "name": values.name,
                     "username": values.username,
                     "password": values.password,
-                    "role": values.role,
-                    "email": values.email
+                    "email": values.email,
+                    "fullname": values.name,
+                    "role": values.role
                 }
 
                 handleUpdateById(newUserData);
@@ -151,7 +151,7 @@ function UpdateUser() {
 
     const fecthUserData = async () => {
         setSpinning(true);
-        axios.get(`http://localhost:3005/api/users/${id}`, {
+        axios.get(`http://localhost:3005/api/user/${id}`, {
             withCredentials: true
         })
             .then(response => {
@@ -256,6 +256,7 @@ function UpdateUser() {
                                 defaultFileList={fileList}
                                 valuePropName="avatar"
                                 onChange={onChange}
+                                beforeUpload={() => false}
                                 onPreview={onPreview}
                                 maxCount={1}
                             >
