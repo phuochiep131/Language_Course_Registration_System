@@ -1,6 +1,4 @@
 import {
-    FireOutlined,
-    LockOutlined,
     MailOutlined,
     SmileOutlined,
     UserOutlined,
@@ -27,14 +25,14 @@ import {
   } from "firebase/storage";
   import { Link, useNavigate, useParams } from "react-router-dom";
   
-  function UpdateUser() {
+  function UpdateTeacher() {
     const { id } = useParams();
     const navigate = useNavigate();
   
     const [messageApi, contextHolder] = message.useMessage();
     const [fileList, setFileList] = useState([]);
     const [spinning, setSpinning] = useState(true);
-    const [userData, setUserData] = useState(null);
+    const [teacherData, setTeacherData] = useState(null);
     const [checkChangeAvatar, setCheckChangeAvatar] = useState(false);
   
     const successMessage = () => {
@@ -75,12 +73,12 @@ import {
   
     const handleUpdateById = async (newData) => {
       try {
-        await axios.put(`http://localhost:3005/api/user/${id}`, newData, {
+        await axios.put(`http://localhost:3005/api/teacher/${id}`, newData, {
           withCredentials: true,
         });
         successMessage();
         setTimeout(() => {
-          navigate("/admin/users");
+          navigate("/admin/teachers");
         }, 1000);
       } catch (error) {
         console.error("Update failed:", error);
@@ -103,7 +101,7 @@ import {
             });
           }
   
-          const storageRef = ref(storage, `dream/${compressedFile.name}`);
+          const storageRef = ref(storage, `teachers/${compressedFile.name}`);
           const uploadTask = uploadBytesResumable(storageRef, compressedFile);
   
           uploadTask.on(
@@ -115,28 +113,26 @@ import {
             },
             () => {
               getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                const newUserData = {
-                  username: values.username,
-                  password: values.password,
+                const newTeacherData = {
+                  full_name: values.full_name,
                   email: values.email,
-                  fullname: values.name,
-                  role: values.role,
+                  gender: values.gender,
+                  language: values.language,
                   avatar: downloadURL,
                 };
-                handleUpdateById(newUserData);
+                handleUpdateById(newTeacherData);
                 setSpinning(false);
               });
             }
           );
         } else {
-          const newUserData = {
-            username: values.username,
-            password: values.password,
+          const newTeacherData = {
+            full_name: values.full_name,
             email: values.email,
-            fullname: values.name,
-            role: values.role,
+            gender: values.gender,
+            language: values.language,
           };
-          await handleUpdateById(newUserData);
+          await handleUpdateById(newTeacherData);
           setSpinning(false);
         }
       } catch (error) {
@@ -146,14 +142,14 @@ import {
       }
     };
   
-    const fetchUserData = async () => {
+    const fetchTeacherData = async () => {
       try {
         setSpinning(true);
-        const response = await axios.get(`http://localhost:3005/api/user/${id}`, {
+        const response = await axios.get(`http://localhost:3005/api/teacher/${id}`, {
           withCredentials: true,
         });
         const data = response.data;
-        setUserData(data);
+        setTeacherData(data);
         setFileList([
           {
             uid: "-1",
@@ -164,40 +160,40 @@ import {
         ]);
         setSpinning(false);
       } catch (error) {
-        console.error("Fetch user failed:", error);
+        console.error("Fetch teacher failed:", error);
         setSpinning(false);
       }
     };
   
     useEffect(() => {
-      fetchUserData();
+      fetchTeacherData();
     }, [id]);
   
     return (
-      <Flex className="UpdateUser" vertical gap={20}>
+      <Flex className="UpdateTeacher" vertical gap={20}>
         {contextHolder}
         <Spin spinning={spinning} fullscreen />
         <Breadcrumb
           items={[
             { title: "Admin Dashboard" },
-            { title: <Link to="/admin/users">Quản lý người dùng</Link> },
+            { title: <Link to="/admin/teachers">Quản lý giảng viên</Link> },
             { title: "Cập nhật" },
-            { title: userData?.fullname },
+            { title: teacherData?.full_name },
           ]}
         />
-        {userData && (
+        {teacherData && (
           <Form
-            name="update_user"
+            name="update_teacher"
             style={{ width: 400, margin: "0 auto" }}
             initialValues={{
-              name: userData.fullname,
-              email: userData.email,
-              username: userData.username,
-              role: userData.role,
+              full_name: teacherData.full_name,
+              email: teacherData.email,
+              gender: teacherData.gender,
+              language: teacherData.language,
             }}
             onFinish={onFinish}
           >
-            <Form.Item name="name">
+            <Form.Item name="full_name">
               <Input
                 prefix={<SmileOutlined />}
                 placeholder="Họ và tên"
@@ -213,30 +209,23 @@ import {
                 size="large"
               />
             </Form.Item>
-            <Form.Item name="username">
-              <Input
-                prefix={<UserOutlined />}
-                placeholder="Tên đăng nhập"
-                allowClear
-                size="large"
-              />
-            </Form.Item>
-            <Form.Item name="password">
-              <Input.Password
-                prefix={<LockOutlined />}
-                placeholder="Mật khẩu"
-                allowClear
-                size="large"
-              />
-            </Form.Item>
-            <Form.Item name="role">
+            <Form.Item name="gender">
               <Select
-                placeholder="Loại tài khoản"
+                placeholder="Giới tính"
                 size="large"
                 options={[
-                  { label: "Student", value: "Student" },
-                  { label: "Admin", value: "Admin" },
+                  { label: "Nam", value: "Nam" },
+                  { label: "Nữ", value: "Nữ" },
+                  { label: "Khác", value: "Khác" },
                 ]}
+              />
+            </Form.Item>
+            <Form.Item name="language">
+              <Input
+                prefix={<UserOutlined />}
+                placeholder="Ngôn ngữ giảng dạy"
+                allowClear
+                size="large"
               />
             </Form.Item>
             <Form.Item name="avatar">
@@ -259,7 +248,7 @@ import {
                 size="large"
                 disabled={spinning}
               >
-                Cập nhật người dùng
+                Cập nhật giảng viên
               </Button>
             </Form.Item>
           </Form>
@@ -268,5 +257,5 @@ import {
     );
   }
   
-  export default UpdateUser;
+  export default UpdateTeacher;
   

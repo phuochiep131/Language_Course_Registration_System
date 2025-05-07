@@ -17,7 +17,9 @@ import axios from 'axios';
 import UserManager from './UserManager/UserManager';
 import UpdateUser from './UserManager/UpdateUser';
 // import CourseManager from './CourseManager/CourseManager';
-// import TeacherManager from './TeacherManager/TeacherManager';
+import TeacherManager from './TeacherManager/TeacherManager';
+import UpdateTeacher from './TeacherManager/UpdateTeacher';
+//import TeacherManager from './TeacherManager/TeacherManager';
 // import ScheduleManager from './ScheduleManager/ScheduleManager';
 
 const { Sider } = Layout;
@@ -90,7 +92,8 @@ const AdminLayout = () => {
                             <Route path="users" element={<UserManager />} />
                             <Route path="users/update/:id" element={<UpdateUser />} />
                             {/* <Route path="courses" element={<CourseManager />} /> */}
-                            {/* <Route path="teachers" element={<TeacherManager />} /> */}
+                            <Route path="teachers" element={<TeacherManager />} />
+                            <Route path="teachers/update/:id" element={<UpdateTeacher />} />
                             {/* <Route path="schedules" element={<ScheduleManager />} /> */}
                         </Routes>
                     </Layout>
