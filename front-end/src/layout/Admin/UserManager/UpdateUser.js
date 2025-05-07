@@ -174,7 +174,7 @@ function UpdateUser() {
 
     useEffect(() => {
       fetchUserData();
-    }, [id]);
+    }, []);
 
     return (
         <Flex className="UpdateUser" vertical gap={20}>
