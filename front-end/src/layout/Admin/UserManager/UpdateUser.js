@@ -170,8 +170,8 @@ import {
     };
   
     useEffect(() => {
-      fetchUserData();
-    }, [id]);
+        fecthUserData();
+    },[])
   
     return (
       <Flex className="UpdateUser" vertical gap={20}>
