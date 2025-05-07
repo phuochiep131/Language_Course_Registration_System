@@ -155,7 +155,7 @@ function UpdateUser() {
             withCredentials: true
         })
             .then(response => {
-                console.log(response.data);
+                //console.log(response.data);
                 setUserData(response.data);
                 setFileList([
                     {
@@ -174,7 +174,7 @@ function UpdateUser() {
 
     useEffect(() => {
         fecthUserData();
-    },)
+    },[])
 
     return (
         <Flex className="UpdateUser" vertical gap={20}>
