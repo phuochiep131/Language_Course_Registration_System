@@ -155,7 +155,7 @@ function UpdateUser() {
             withCredentials: true
         })
             .then(response => {
-                console.log(response.data);
+                //console.log(response.data);
                 setUserData(response.data);
                 setFileList([
                     {
