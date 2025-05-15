@@ -19,6 +19,8 @@ import UpdateUser from './UserManager/UpdateUser';
 // import CourseManager from './CourseManager/CourseManager';
 import TeacherManager from './TeacherManager/TeacherManager';
 import UpdateTeacher from './TeacherManager/UpdateTeacher';
+import LanguageManager from './LanguageManager/LanguageManager';
+import UpdateLanguage from './LanguageManager/UpdateLanguage';
 //import TeacherManager from './TeacherManager/TeacherManager';
 // import ScheduleManager from './ScheduleManager/ScheduleManager';
 
@@ -36,9 +38,11 @@ function getItem(label, key, icon, children) {
 const items = [
     getItem(<Link to="/admin">Tổng quan</Link>, 'overview', <PieChartOutlined />),
     getItem(<Link to="/admin/users">Quản lý người dùng</Link>, 'users', <UserOutlined />),
-    getItem(<Link to="/admin/courses">Quản lý khóa học</Link>, 'courses', <BookOutlined />),
+    getItem(<Link to="/admin/languages">Quản lý ngôn ngữ</Link>, 'languages', <BookOutlined />),
     getItem(<Link to="/admin/teachers">Quản lý giảng viên</Link>, 'teachers', <TeamOutlined />),
-    getItem(<Link to="/admin/schedules">Quản lý lịch học</Link>, 'schedules', <CalendarOutlined />),
+    getItem(<Link to="/admin/courses">Quản lý khóa học</Link>, 'courses', <BookOutlined />),
+    
+    // getItem(<Link to="/admin/schedules">Quản lý lịch học</Link>, 'schedules', <CalendarOutlined />),
 ];
 
 const AdminLayout = () => {
@@ -94,6 +98,8 @@ const AdminLayout = () => {
                             {/* <Route path="courses" element={<CourseManager />} /> */}
                             <Route path="teachers" element={<TeacherManager />} />
                             <Route path="teachers/update/:id" element={<UpdateTeacher />} />
+                            <Route path="languages" element={<LanguageManager />} />
+                            <Route path='languages/update/:id' element={<UpdateLanguage/>}/>
                             {/* <Route path="schedules" element={<ScheduleManager />} /> */}
                         </Routes>
                     </Layout>
