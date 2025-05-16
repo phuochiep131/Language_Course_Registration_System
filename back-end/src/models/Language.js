@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const LanguageSchema = new mongoose.Schema({
-  language: { type: String, required: true }
+  language: { type: String, required: true, unique: true }
 });
 
 // const LanguageLevelSchema = new mongoose.Schema({

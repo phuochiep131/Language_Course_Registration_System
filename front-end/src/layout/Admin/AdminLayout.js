@@ -21,6 +21,8 @@ import TeacherManager from './TeacherManager/TeacherManager';
 import UpdateTeacher from './TeacherManager/UpdateTeacher';
 import LanguageManager from './LanguageManager/LanguageManager';
 import UpdateLanguage from './LanguageManager/UpdateLanguage';
+import LanguageLevelManager from './LanguageLevelManager/LanguageLevelManager';
+import UpdateLanguageLevel from './LanguageLevelManager/UpdateLanguageLevel';
 //import TeacherManager from './TeacherManager/TeacherManager';
 // import ScheduleManager from './ScheduleManager/ScheduleManager';
 
@@ -39,6 +41,7 @@ const items = [
     getItem(<Link to="/admin">Tổng quan</Link>, 'overview', <PieChartOutlined />),
     getItem(<Link to="/admin/users">Quản lý người dùng</Link>, 'users', <UserOutlined />),
     getItem(<Link to="/admin/languages">Quản lý ngôn ngữ</Link>, 'languages', <BookOutlined />),
+    getItem(<Link to="/admin/languageslevel">Quản lý trình độ ngôn ngữ</Link>, 'languageslevel', <BookOutlined />),
     getItem(<Link to="/admin/teachers">Quản lý giảng viên</Link>, 'teachers', <TeamOutlined />),
     getItem(<Link to="/admin/courses">Quản lý khóa học</Link>, 'courses', <BookOutlined />),
     
@@ -100,6 +103,8 @@ const AdminLayout = () => {
                             <Route path="teachers/update/:id" element={<UpdateTeacher />} />
                             <Route path="languages" element={<LanguageManager />} />
                             <Route path='languages/update/:id' element={<UpdateLanguage/>}/>
+                            <Route path="languageslevel" element={<LanguageLevelManager />} />
+                            <Route path='languageslevel/update/:id' element={<UpdateLanguageLevel/>}/>
                             {/* <Route path="schedules" element={<ScheduleManager />} /> */}
                         </Routes>
                     </Layout>
