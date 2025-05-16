@@ -29,7 +29,7 @@ import {
     const errorMessage = () => {
       messageApi.open({
         type: "error",
-        content: "Cập nhật thất bại, ngôn ngữ này đã tồn tại!!",
+        content: "Cập nhật thất bại, trình độ này đã có!",
       });
     };
   
@@ -37,16 +37,16 @@ import {
       //console.log(id)
       setSpinning(true);
       try {
-        const res = await axios.get(`http://localhost:3005/api/language/${id}`, {
+        const res = await axios.get(`http://localhost:3005/api/languagelevel/${id}`, {
           withCredentials: true,
         });
         form.setFieldsValue({
-          id: res.data._id, 
-          language: res.data.language,
+          id: res.data._id,
+          language_level: res.data.language_level,
         });
       } catch (error) {
-        console.error("Lỗi khi lấy dữ liệu ngôn ngữ:", error);
-        messageApi.error("Không thể tải dữ liệu ngôn ngữ");
+        console.error("Lỗi khi lấy dữ liệu trình độ:", error);
+        messageApi.error("Không thể tải dữ liệu trình độ");
       } finally {
         setSpinning(false);
       }
@@ -57,12 +57,12 @@ import {
     const onFinish = async (values) => {
       setSpinning(true);
       try {
-        await axios.put(`http://localhost:3005/api/language/${id}`, values, {
+        await axios.put(`http://localhost:3005/api/languagelevel/${id}`, values, {
           withCredentials: true,
         });
         successMessage();
         setTimeout(() => {
-          navigate("/admin/languages");
+          navigate("/admin/languageslevel");
         }, 1000);
       } catch (error) {
         console.error("Cập nhật thất bại:", error);
@@ -83,8 +83,8 @@ import {
         <Breadcrumb
           items={[
             { title: "Admin Dashboard" },
-            { title: <Link to="/admin/languages">Quản lý ngôn ngữ</Link> },
-            { title: `Cập nhật ngôn ngữ` },
+            { title: <Link to="/admin/languageslevel">Quản lý trình độ</Link> },
+            { title: `Cập nhật trình độ` },
           ]}
         />
         <Form
@@ -93,15 +93,15 @@ import {
           onFinish={onFinish}
           style={{ maxWidth: 400, margin: "0 auto" }}
         >
-          <Form.Item label="Mã ngôn ngữ (ID)" name="id">
+          <Form.Item label="Mã trình độ (ID)" name="id">
             <Input disabled />
           </Form.Item>
           <Form.Item
-            label="Tên ngôn ngữ"
-            name="language"
-            rules={[{ required: true, message: "Vui lòng nhập tên ngôn ngữ" }]}
+            label="Tên trình độ"
+            name="language_level"
+            rules={[{ required: true, message: "Vui lòng nhập tên trình độ" }]}
           >
-            <Input placeholder="Ví dụ: Tiếng Anh" />
+            <Input placeholder="Ví dụ: A1, A2, A3,..." />
           </Form.Item>
           <Form.Item>
             <Button
@@ -111,7 +111,7 @@ import {
               size="large"
               disabled={spinning}
             >
-              Cập nhật ngôn ngữ
+              Cập nhật trình độ
             </Button>
           </Form.Item>
         </Form>
