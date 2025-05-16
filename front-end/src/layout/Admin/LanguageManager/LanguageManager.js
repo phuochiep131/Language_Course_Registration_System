@@ -15,7 +15,7 @@ function LanguageManager() {
     const columns = [
         {
             title: 'Mã ngôn ngữ',
-            dataIndex: 'id',
+            dataIndex: '_id',
             width: 200,
         },
         {
@@ -23,26 +23,28 @@ function LanguageManager() {
             dataIndex: 'language',
         },
         {
-                    title: 'Sửa',
-                    dataIndex: 'update',
-                    render: (_id) =>
-                        <Link to={`update/${_id}`}>
-                            {/* <i className="fa-solid fa-pen-to-square" style={{ color: "#00CC77", fontSize: "18px" }}></i> */}
-                            suaa
-                        </Link>,
-                    width: 60,
-                    align: "center"
-                }
+            title: 'Sửa',
+            dataIndex: '_id',
+            render: (_id) =>
+                <Link to={`update/${_id}`}>
+                    {/* <i className="fa-solid fa-pen-to-square" style={{ color: "#00CC77", fontSize: "18px" }}></i> */}
+                    suaaa
+                </Link>,
+            width: 60,
+            align: "center"
+        }
+
     ];
 
     const fetchData = () => {
         axios.get(`http://localhost:3005/api/language`, { withCredentials: true })
             .then(response => {
                 const data = response.data.map(l => ({
-                    key: l.id,
-                    id: l.id,
+                    key: l._id,
+                    _id: l._id,
                     language: l.language,
                 }));
+
                 setLanguages(data);
             })
             .catch(err => console.error('Fetch error:', err));
@@ -51,7 +53,7 @@ function LanguageManager() {
     const onFinish = (values) => {
         setSpinning(true);
         setOpen(false);
-        axios.post(`http://localhost:3005/api/language`, values, {
+        axios.post(`http://localhost:3005/api/language/add`, values, {
             withCredentials: true
         })
             .then(() => fetchData())
@@ -143,13 +145,13 @@ function LanguageManager() {
                 centered
             >
                 <Form onFinish={onFinish} layout="vertical">
-                    <Form.Item
+                    {/* <Form.Item
                         label="Mã ngôn ngữ"
                         name="id"
                         rules={[{ required: true, message: 'Vui lòng nhập mã ngôn ngữ!' }]}
                     >
                         <Input placeholder="Nhập mã ngôn ngữ" allowClear />
-                    </Form.Item>
+                    </Form.Item> */}
                     <Form.Item
                         label="Ngôn ngữ"
                         name="language"

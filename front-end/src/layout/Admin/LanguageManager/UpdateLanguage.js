@@ -34,21 +34,25 @@ import {
     };
   
     const fetchLanguage = async () => {
+      console.log(id)
       setSpinning(true);
       try {
         const res = await axios.get(`http://localhost:3005/api/language/${id}`, {
           withCredentials: true,
         });
         form.setFieldsValue({
-          id: res.data.id,
+          id: res.data._id, // hoặc 'res.data.id' nếu bạn lưu kiểu đó
           language: res.data.language,
         });
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu ngôn ngữ:", error);
+        messageApi.error("Không thể tải dữ liệu ngôn ngữ");
       } finally {
         setSpinning(false);
       }
     };
+
+
   
     const onFinish = async (values) => {
       setSpinning(true);
