@@ -6,7 +6,10 @@ import {
     TeamOutlined,
     CalendarOutlined,
     PieChartOutlined,
-    ExportOutlined
+    ExportOutlined,
+    GlobalOutlined,
+    BarChartOutlined,
+    ReadOutlined
 } from '@ant-design/icons';
 import { Flex, Layout, Menu } from 'antd';
 import { Link, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
@@ -40,10 +43,11 @@ function getItem(label, key, icon, children) {
 const items = [
     getItem(<Link to="/admin">Tổng quan</Link>, 'overview', <PieChartOutlined />),
     getItem(<Link to="/admin/users">Quản lý người dùng</Link>, 'users', <UserOutlined />),
-    getItem(<Link to="/admin/languages">Quản lý ngôn ngữ</Link>, 'languages', <BookOutlined />),
-    getItem(<Link to="/admin/languageslevel">Quản lý trình độ ngôn ngữ</Link>, 'languageslevel', <BookOutlined />),
+    getItem(<Link to="/admin/languages">Quản lý ngôn ngữ</Link>, 'languages', <GlobalOutlined />),
+    getItem(<Link to="/admin/languageslevel">Quản lý trình độ ngôn ngữ</Link>, 'languageslevel', <BarChartOutlined />),
     getItem(<Link to="/admin/teachers">Quản lý giảng viên</Link>, 'teachers', <TeamOutlined />),
-    getItem(<Link to="/admin/courses">Quản lý khóa học</Link>, 'courses', <BookOutlined />),
+    getItem(<Link to="/admin/courses">Quản lý khóa học</Link>, 'courses', <ReadOutlined />),
+
     
     // getItem(<Link to="/admin/schedules">Quản lý lịch học</Link>, 'schedules', <CalendarOutlined />),
 ];
