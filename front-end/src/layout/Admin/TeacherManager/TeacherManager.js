@@ -14,6 +14,7 @@ function TeacherManager() {
     const [open, setOpen] = useState(false);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [teachers, setTeachers] = useState([]);
+    const [languages, setLanguages] = useState([]);
     const [spinning, setSpinning] = useState(false);
     const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
     const [fileList, setFileList] = useState([]);
@@ -46,24 +47,21 @@ function TeacherManager() {
         },
         {
             title: 'Ngôn ngữ',
-            dataIndex: 'language',
+            dataIndex: 'language_name', // sẽ map thủ công khi fetch
         },
         {
-                    title: 'Sửa',
-                    dataIndex: 'update',
-                    render: (_id) =>
-                        <Link to={`update/${_id}`}>
-                            {/* <i className="fa-solid fa-pen-to-square" style={{ color: "#00CC77", fontSize: "18px" }}></i> */}
-                            suaa
-                        </Link>,
-                    width: 60,
-                    align: "center"
-                },
+            title: 'Sửa',
+            dataIndex: 'update',
+            render: (_id) =>
+                <Link to={`update/${_id}`}>
+                    Sửa
+                </Link>,
+            width: 60,
+            align: "center"
+        },
     ];
 
-    const onChange = ({ fileList: newFileList }) => {
-        setFileList(newFileList);
-    };
+    const onChange = ({ fileList: newFileList }) => setFileList(newFileList);
 
     const onPreview = async (file) => {
         let src = file.url;
@@ -80,17 +78,11 @@ function TeacherManager() {
         imgWindow?.document.write(image.outerHTML);
     };
 
-    const onSelectChange = (newSelectedRowKeys) => {
-        setSelectedRowKeys(newSelectedRowKeys);
-    };
+    const onSelectChange = (newSelectedRowKeys) => setSelectedRowKeys(newSelectedRowKeys);
 
-    const showModal = () => {
-        setOpen(true);
-    };
+    const showModal = () => setOpen(true);
 
-    const showDeleteConfirm = () => {
-        setOpenDeleteConfirm(true);
-    };
+    const showDeleteConfirm = () => setOpenDeleteConfirm(true);
 
     const rowSelection = {
         selectedRowKeys,
@@ -100,6 +92,26 @@ function TeacherManager() {
     const onFinish = async (values) => {
         setSpinning(true);
         setOpen(false);
+
+        const createTeacher = (avatarUrl = null) => {
+            const newTeacher = {
+                full_name: values.full_name,
+                gender: values.gender,
+                email: values.email,
+                language: values.language, // là _id
+                ...(avatarUrl && { avatar: avatarUrl })
+            };
+
+            axios.post(`http://localhost:3005/api/teacher`, newTeacher, {
+                withCredentials: true
+            })
+                .then(() => {
+                    fetchData();
+                    setFileList([]);
+                })
+                .catch(error => console.error('Error creating teacher:', error))
+                .finally(() => setSpinning(false));
+        };
 
         if (fileList && fileList.length > 0) {
             const file = fileList[0].originFileObj;
@@ -123,25 +135,7 @@ function TeacherManager() {
                     (error) => { console.log(error); },
                     () => {
                         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                            const newTeacher = {
-                                full_name: values.full_name,
-                                gender: values.gender,
-                                email: values.email,
-                                language: values.language,
-                                avatar: downloadURL
-                            };
-
-                            axios.post(`http://localhost:3005/api/teacher`, newTeacher, {
-                                withCredentials: true
-                            })
-                                .then(() => {
-                                    fetchData();
-                                    setFileList([]);
-                                })
-                                .catch(error => {
-                                    console.error('Error creating teacher:', error);
-                                })
-                                .finally(() => setSpinning(false));
+                            createTeacher(downloadURL);
                         });
                     }
                 );
@@ -149,19 +143,7 @@ function TeacherManager() {
                 console.error('Image Compression Error:', error);
             }
         } else {
-            const newTeacher = {
-                full_name: values.full_name,
-                gender: values.gender,
-                email: values.email,
-                language: values.language
-            };
-
-            axios.post(`http://localhost:3005/api/teacher`, newTeacher, {
-                withCredentials: true
-            })
-                .then(() => fetchData())
-                .catch(error => console.error('Error creating teacher:', error))
-                .finally(() => setSpinning(false));
+            createTeacher();
         }
     };
 
@@ -169,10 +151,8 @@ function TeacherManager() {
         setSpinning(true);
         setOpenDeleteConfirm(false);
 
-        const dataKey = { teacherIds: selectedRowKeys };
-
         axios.delete(`http://localhost:3005/api/teacher/multiple`, {
-            data: dataKey,
+            data: { teacherIds: selectedRowKeys },
             withCredentials: true
         })
             .then(() => {
@@ -183,27 +163,46 @@ function TeacherManager() {
             .finally(() => setSpinning(false));
     };
 
+    const fetchLanguages = () => {
+        axios.get(`http://localhost:3005/api/language`, {
+            withCredentials: true
+        })
+            .then(res => {
+                setLanguages(res.data);
+            })
+            .catch(err => console.log("Error fetching languages:", err));
+    };
+
     const fetchData = () => {
         axios.get(`http://localhost:3005/api/teacher`, {
             withCredentials: true
         })
             .then(response => {
-                const dataFormatted = response.data.map(t => ({
-                    key: t.id,
-                    full_name: { full_name: t.full_name, avatar: t.avatar },
-                    gender: t.gender,
-                    email: t.email,
-                    language: t.language,
-                    update: t._id
-                }));
+                const dataFormatted = response.data.map(t => {
+                    const matchedLang = languages.find(lang => lang._id === t.language);
+                    return {
+                        key: t.id,
+                        full_name: { full_name: t.full_name, avatar: t.avatar },
+                        gender: t.gender,
+                        email: t.email,
+                        language_name: matchedLang?.language || t.language,
+                        update: t._id
+                    };
+                });
                 setTeachers(dataFormatted);
             })
             .catch(error => console.log(error));
     };
 
     useEffect(() => {
-        fetchData();
+        fetchLanguages();
     }, []);
+
+    useEffect(() => {
+        if (languages.length > 0) {
+            fetchData();
+        }
+    }, [languages]);
 
     return (
         <Flex className="TeacherManager" vertical gap={20} style={{ position: "relative" }}>
@@ -268,8 +267,14 @@ function TeacherManager() {
                             <Select.Option value="Nữ">Nữ</Select.Option>
                         </Select>
                     </Form.Item>
-                    <Form.Item name="language" rules={[{ required: true, message: 'Vui lòng nhập ngôn ngữ!' }]}>
-                        <Input placeholder="Ngôn ngữ giảng dạy" allowClear />
+                    <Form.Item name="language" rules={[{ required: true, message: 'Vui lòng chọn ngôn ngữ!' }]}>
+                        <Select placeholder="Ngôn ngữ giảng dạy">
+                            {languages.map(lang => (
+                                <Select.Option key={lang._id} value={lang._id}>
+                                    {lang.language}
+                                </Select.Option>
+                            ))}
+                        </Select>
                     </Form.Item>
                     <Form.Item name="avatar">
                         <Upload
