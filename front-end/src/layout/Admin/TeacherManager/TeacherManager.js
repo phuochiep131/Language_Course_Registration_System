@@ -93,18 +93,22 @@ function TeacherManager() {
         setSpinning(true);
         setOpen(false);
 
+        console.log(values)
+
         const createTeacher = (avatarUrl = null) => {
             const newTeacher = {
                 full_name: values.full_name,
                 gender: values.gender,
                 email: values.email,
-                language: values.language, // là _id
+                language_id: values.language,
                 ...(avatarUrl && { avatar: avatarUrl })
             };
 
+
             axios.post(`http://localhost:3005/api/teacher`, newTeacher, {
-                withCredentials: true
+                withCredentials: true,
             })
+
                 .then(() => {
                     fetchData();
                     setFileList([]);
@@ -178,21 +182,19 @@ function TeacherManager() {
             withCredentials: true
         })
             .then(response => {
-                const dataFormatted = response.data.map(t => {
-                    const matchedLang = languages.find(lang => lang._id === t.language);
-                    return {
-                        key: t.id,
-                        full_name: { full_name: t.full_name, avatar: t.avatar },
-                        gender: t.gender,
-                        email: t.email,
-                        language_name: matchedLang?.language || t.language,
-                        update: t._id
-                    };
-                });
+                const dataFormatted = response.data.map(t => ({
+                    key: t._id,
+                    full_name: { full_name: t.full_name, avatar: t.avatar },
+                    gender: t.gender,
+                    email: t.email,
+                    language_name: t.language_id?.language || '',
+                    update: t._id
+                }));
                 setTeachers(dataFormatted);
             })
             .catch(error => console.log(error));
     };
+
 
     useEffect(() => {
         fetchLanguages();
@@ -269,7 +271,8 @@ function TeacherManager() {
                     </Form.Item>
                     <Form.Item name="language" rules={[{ required: true, message: 'Vui lòng chọn ngôn ngữ!' }]}>
                         <Select placeholder="Ngôn ngữ giảng dạy">
-                            {languages.map(lang => (
+                            {
+                            languages.map(lang => (
                                 <Select.Option key={lang._id} value={lang._id}>
                                     {lang.language}
                                 </Select.Option>
