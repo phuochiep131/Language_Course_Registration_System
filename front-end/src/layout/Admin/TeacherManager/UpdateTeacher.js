@@ -179,7 +179,7 @@ function UpdateTeacher() {
                     initialValues={{
                         name: teacherData.full_name,
                         email: teacherData.email,
-                        username: teacherData.username,
+                        // username: teacherData.username,
                     }}
                     onFinish={onFinish}
                 >
@@ -189,12 +189,12 @@ function UpdateTeacher() {
                     <Form.Item name="email">
                         <Input prefix={<MailOutlined />} placeholder="Email" allowClear size="large" />
                     </Form.Item>
-                    <Form.Item name="username">
+                    {/* <Form.Item name="username">
                         <Input prefix={<UserOutlined />} placeholder="Tên đăng nhập" allowClear size="large" />
                     </Form.Item>
                     <Form.Item name="password">
                         <Input.Password prefix={<LockOutlined />} placeholder="Mật khẩu" allowClear size="large" />
-                    </Form.Item>
+                    </Form.Item> */}
                     <Form.Item name="language">
                         <Select
                             placeholder="Ngôn ngữ giảng dạy"
