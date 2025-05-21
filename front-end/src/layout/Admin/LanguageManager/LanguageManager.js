@@ -86,10 +86,19 @@ function LanguageManager() {
             .then(() => {
                 fetchData();
                 setSelectedRowKeys([]);
+                messageApi.success('Xóa ngôn ngữ thành công!');
             })
-            .catch(error => console.log(error))
+            .catch(error => {
+                if (error.response && error.response.status === 400) {
+                    const msg = 'Không thể xóa. Có giáo viên đang sử dụng ngôn ngữ này.'
+                    messageApi.error(msg);
+                } else {
+                    messageApi.error('Có lỗi xảy ra khi xoá ngôn ngữ!');
+                }
+            })
             .finally(() => setSpinning(false));
     };
+
 
     useEffect(() => {
         fetchData();

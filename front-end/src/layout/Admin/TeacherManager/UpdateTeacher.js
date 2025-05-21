@@ -125,12 +125,12 @@ function UpdateTeacher() {
                 }, () => {
                     getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
                         const newTeacherData = {
-                            fullname: values.name,
+                            full_name: values.name,
                             email: values.email,
-                            username: values.username,
-                            password: values.password,
-                            language_id: values.language,
-                            avatar: downloadURL
+                            // username: values.username,
+                            // password: values.password,
+                            language_id: values.language
+                            // avatar: downloadURL
                         };
                         handleUpdateById(newTeacherData);
                         setSpinning(false);
@@ -142,11 +142,12 @@ function UpdateTeacher() {
             }
         } else {
             const newTeacherData = {
-                fullname: values.name,
+                full_name: values.name,
                 email: values.email,
-                username: values.username,
-                password: values.password,
+                // username: values.username,
+                // password: values.password,
                 language_id: values.language
+                // avatar: downloadURL
             };
             handleUpdateById(newTeacherData);
             setSpinning(false);
@@ -176,10 +177,9 @@ function UpdateTeacher() {
                     name="update_teacher"
                     style={{ width: 400, margin: "0 auto" }}
                     initialValues={{
-                        name: teacherData.fullname,
+                        name: teacherData.full_name,
                         email: teacherData.email,
-                        username: teacherData.username,
-                        language: teacherData.language_id,
+                        // username: teacherData.username,
                     }}
                     onFinish={onFinish}
                 >
@@ -189,12 +189,12 @@ function UpdateTeacher() {
                     <Form.Item name="email">
                         <Input prefix={<MailOutlined />} placeholder="Email" allowClear size="large" />
                     </Form.Item>
-                    <Form.Item name="username">
+                    {/* <Form.Item name="username">
                         <Input prefix={<UserOutlined />} placeholder="Tên đăng nhập" allowClear size="large" />
                     </Form.Item>
                     <Form.Item name="password">
                         <Input.Password prefix={<LockOutlined />} placeholder="Mật khẩu" allowClear size="large" />
-                    </Form.Item>
+                    </Form.Item> */}
                     <Form.Item name="language">
                         <Select
                             placeholder="Ngôn ngữ giảng dạy"
@@ -203,8 +203,8 @@ function UpdateTeacher() {
                         >
                             {
                                 languageOptions.map(lang => (
-                                    <Select.Option key={lang.id} value={lang.id}>
-                                        {lang.name}
+                                    <Select.Option key={lang._id} value={lang._id}>
+                                        {lang.language}
                                     </Select.Option>
                                 ))
                             }
