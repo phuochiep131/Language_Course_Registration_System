@@ -50,7 +50,8 @@ function UserManager() {
             dataIndex: 'update',
             render: (_id) =>
                 <Link to={`update/${_id}`}>
-                    <i className="fa-solid fa-pen-to-square" style={{ color: "#1677ff", fontSize: "18px" }}></i>
+                    {/* <i className="fa-solid fa-pen-to-square" style={{ color: "#00CC77", fontSize: "18px" }}></i> */}
+                    suaa
                 </Link>,
             width: 60,
             align: "center"
@@ -122,12 +123,12 @@ function UserManager() {
                     () => {
                         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
                             const newUser = {
-                                "name": values.name,
-                                "avatar": downloadURL,
                                 "username": values.username,
                                 "password": values.password,
+                                "email": values.email,
+                                "fullname": values.name,
                                 "role": values.role,
-                                "email": values.email
+                                "avatar": downloadURL
                             }
 
                             axios.post(`http://localhost:3005/api/auth/register`, newUser, {
@@ -146,11 +147,11 @@ function UserManager() {
         } else {
             try {
                 const newUser = {
-                    "name": values.name,
                     "username": values.username,
                     "password": values.password,
-                    "role": values.role,
-                    "email": values.email
+                    "email": values.email,
+                    "fullname": values.name,
+                    "role": values.role
                 }
 
                 axios.post(`http://localhost:3005/api/auth/register`, newUser, {
@@ -170,7 +171,7 @@ function UserManager() {
 
         const dataKey = { userIds: selectedRowKeys }
 
-        axios.delete(`http://localhost:3005/api/users/multiple`, {
+        axios.delete(`http://localhost:3005/api/user/multiple`, {
             data: dataKey,
             withCredentials: true
         })
@@ -183,14 +184,14 @@ function UserManager() {
     }
 
     const fetchData = () => {
-        axios.get(`http://localhost:3005/api/users`, {
+        axios.get(`http://localhost:3005/api/user`, {
             withCredentials: true
         })
             .then(response => {
                 const dataFormatted = response.data.map(data => {
                     return ({
                         key: data._id,
-                        name: { name: data.name, avatar: data.avatar },
+                        name: { name: data.fullname, avatar: data.avatar },
                         email: data.email,
                         role: data.role,
                         username: data.username,
