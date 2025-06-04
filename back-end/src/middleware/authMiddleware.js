@@ -20,7 +20,7 @@ const authenticate = (req, res, next) => {
         // Lưu thông tin người dùng vào yêu cầu để sử dụng trong các xử lý tiếp theo
         req.user = decoded.user;
 
-        // console.log('Authenticated user:', req.user); // Thêm dòng này để kiểm tra thông tin người dùng
+        console.log('Authenticated user:', req.user); // Thêm dòng này để kiểm tra thông tin người dùng
 
         // Chuyển đến middleware hoặc xử lý tiếp theo
         next();
