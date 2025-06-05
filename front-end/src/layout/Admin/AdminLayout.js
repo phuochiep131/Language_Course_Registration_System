@@ -26,6 +26,8 @@ import LanguageManager from './LanguageManager/LanguageManager';
 import UpdateLanguage from './LanguageManager/UpdateLanguage';
 import LanguageLevelManager from './LanguageLevelManager/LanguageLevelManager';
 import UpdateLanguageLevel from './LanguageLevelManager/UpdateLanguageLevel';
+import CourseManager from './CourseManager/CourseManager';
+import UpdateCourse from './CourseManager/UpdateCourse';
 //import TeacherManager from './TeacherManager/TeacherManager';
 // import ScheduleManager from './ScheduleManager/ScheduleManager';
 
@@ -44,7 +46,7 @@ const items = [
     getItem(<Link to="/admin">Tổng quan</Link>, 'overview', <PieChartOutlined />),
     getItem(<Link to="/admin/users">Quản lý người dùng</Link>, 'users', <UserOutlined />),
     getItem(<Link to="/admin/languages">Quản lý ngôn ngữ</Link>, 'languages', <GlobalOutlined />),
-    getItem(<Link to="/admin/languageslevel">Quản lý trình độ ngôn ngữ</Link>, 'languageslevel', <BarChartOutlined />),
+    getItem(<Link to="/admin/languageslevel">Quản lý trình độ</Link>, 'languageslevel', <BarChartOutlined />),
     getItem(<Link to="/admin/teachers">Quản lý giảng viên</Link>, 'teachers', <TeamOutlined />),
     getItem(<Link to="/admin/courses">Quản lý khóa học</Link>, 'courses', <ReadOutlined />),
 
@@ -61,6 +63,7 @@ const AdminLayout = () => {
         location.pathname.startsWith('/admin/courses') ? 'courses' :
         location.pathname.startsWith('/admin/teachers') ? 'teachers' :
         location.pathname.startsWith('/admin/schedules') ? 'schedules' :
+        location.pathname.startsWith('/admin/courses') ? 'courses' :
         'overview';
 
     const [collapsed, setCollapsed] = useState(false);
@@ -109,6 +112,8 @@ const AdminLayout = () => {
                             <Route path='languages/update/:id' element={<UpdateLanguage/>}/>
                             <Route path="languageslevel" element={<LanguageLevelManager />} />
                             <Route path='languageslevel/update/:id' element={<UpdateLanguageLevel/>}/>
+                            <Route path="courses" element={<CourseManager />} />
+                            <Route path='courses/update/:id' element={<UpdateCourse/>}/>
                             {/* <Route path="schedules" element={<ScheduleManager />} /> */}
                         </Routes>
                     </Layout>
