@@ -90,7 +90,7 @@ function LanguageManager() {
             })
             .catch(error => {
                 if (error.response && error.response.status === 400) {
-                    const msg = 'Không thể xóa. Có giáo viên đang sử dụng ngôn ngữ này.'
+                    const msg = 'Không thể xóa. Có giảng viên đang sử dụng ngôn ngữ này.'
                     messageApi.error(msg);
                 } else {
                     messageApi.error('Có lỗi xảy ra khi xoá ngôn ngữ!');

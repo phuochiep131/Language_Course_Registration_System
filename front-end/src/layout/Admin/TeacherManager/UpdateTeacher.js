@@ -166,7 +166,7 @@ function UpdateTeacher() {
             <Breadcrumb
                 items={[
                     { title: 'Admin Dashboard' },
-                    { title: <Link to="/admin/teachers">Quản lý giáo viên</Link> },
+                    { title: <Link to="/admin/teachers">Quản lý giảng viên</Link> },
                     { title: 'Cập nhật' },
                     { title: teacherData?.fullname },
                 ]}
@@ -195,12 +195,11 @@ function UpdateTeacher() {
                     <Form.Item name="password">
                         <Input.Password prefix={<LockOutlined />} placeholder="Mật khẩu" allowClear size="large" />
                     </Form.Item> */}
-                    <Form.Item name="language">
-                        <Select
-                            placeholder="Ngôn ngữ giảng dạy"
-                            size="large"
-                            suffixIcon={<BookOutlined />}
-                        >
+                    <Form.Item 
+                    name="language"
+                    rules={[{ required: true, message: "Vui lòng chọn ngôn ngữ!" }]}
+                    >
+                        <Select placeholder="Chọn ngôn ngữ">
                             {
                                 languageOptions.map(lang => (
                                     <Select.Option key={lang._id} value={lang._id}>
@@ -209,7 +208,7 @@ function UpdateTeacher() {
                                 ))
                             }
                         </Select>
-                    </Form.Item>
+                    </Form.Item>                    
                     <Form.Item name="avatar">
                         <Upload
                             listType="picture-card"
