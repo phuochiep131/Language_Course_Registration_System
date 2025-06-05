@@ -45,12 +45,12 @@ const deleteMultipleLanguages = async (req, res) => {
 
 
 const getLanguageById = async (req, res) => {
-    console.log(req.params) // { id: '6626b58e...' }
+    console.log(req.params)
 
     const id = req.params.id
 
     try {
-        const lang = await Language.findById(id) // ID là string, mongoose tự chuyển thành ObjectId
+        const lang = await Language.findById(id)
         if (!lang) return res.status(404).json({ message: 'Not found' })
         res.json(lang)
     } catch (err) {

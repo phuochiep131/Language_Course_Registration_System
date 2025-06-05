@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { Button, Table, Flex, Breadcrumb, Modal, Form, Input, Select, Spin, Badge } from 'antd';
 import axios from 'axios';
 
+import { Link } from "react-router-dom";
+
 function CourseManager() {
     const [open, setOpen] = useState(false);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -17,12 +19,12 @@ function CourseManager() {
             title: 'Ngôn ngữ',
             dataIndex: 'language_id',
             render: (langId) => {
-                const lang = languages.find(l => l.id === langId);
-                return <Badge color="blue" count={lang ? lang.name : langId} />;
+                const lang = languages.find(l => l._id === langId);
+                return <Badge color="blue" count={lang ? lang.language : langId} />;
             },
             filters: languages.map(lang => ({
                 text: lang.name,
-                value: lang.id,
+                value: lang._id,
             })),
             onFilter: (value, record) => record.language_id === value,
         },
@@ -30,47 +32,50 @@ function CourseManager() {
             title: 'Trình độ',
             dataIndex: 'languagelevel_id',
             render: (lglvId) => {
-                const lv = languagelevel.find(c => c.id === lglvId);
-                return lv ? lv.name : lglvId;
+                const lv = languagelevel.find(c => c._id === lglvId);
+                return lv ? lv.language_level : lglvId;
             }
         },
         {
             title: 'Giảng viên',
             dataIndex: 'teacher_id',
             render: (teacherId) => {
-                const teacher = teachers.find(t => t.id === teacherId);
-                return teacher ? teacher.name : teacherId;
+                const teacher = teachers.find(t => t._id === teacherId);
+                return teacher ? teacher.full_name : teacherId;
             },
             width: 200,
         },
         {
             title: 'Ngày bắt đầu',
-            dataIndex: 'start_date',
+            dataIndex: 'Start_Date',
+            render: (date) => date ? new Date(date).toLocaleDateString('vi-VN') : '',
         },
         {
             title: 'Số tiết',
-            dataIndex: 'number_of_sessions',
+            dataIndex: 'Number_of_periods',
         },
         {
             title: 'Học phí (VNĐ)',
-            dataIndex: 'tuition_fee',
+            dataIndex: 'Tuition',
             render: (fee) => fee?.toLocaleString() + ' ₫'
         },
         {
             title: 'Mô tả',
-            dataIndex: 'description',
+            dataIndex: 'Description',
             width: 250,
         },    
         {
             title: 'Sửa',
-            dataIndex: 'id',
-            render: (id) => (
-                <a href={`update/${id}`}>Sửa</a>
+            dataIndex: '_id',
+            render: (_, record) => (
+                <Link to={`update/${record._id}`}>Sửa</Link>
             ),
             width: 60,
             align: "center"
         }
     ];
+
+    
 
     const fetchData = () => {
         setSpinning(true);
@@ -83,7 +88,7 @@ function CourseManager() {
         .then(([courseRes, langRes, teacherRes, languagelevelRes]) => {
             setCourses(courseRes.data.map(course => ({
                 ...course,
-                key: course.id,
+                key: course._id,
             })));
             setLanguages(langRes.data);
             setTeachers(teacherRes.data);
@@ -147,6 +152,7 @@ function CourseManager() {
             )}
 
             <Table
+            rowKey="id"
                 rowSelection={{
                     selectedRowKeys,
                     onChange: setSelectedRowKeys
@@ -185,37 +191,37 @@ function CourseManager() {
                     <Form.Item name="language_id" label="Ngôn ngữ" rules={[{ required: true, message: 'Vui lòng chọn ngôn ngữ!' }]}>
                         <Select placeholder="Chọn ngôn ngữ">
                             {languages.map(lang => (
-                                <Select.Option key={lang.id} value={lang.id}>{lang.name}</Select.Option>
+                                <Select.Option key={lang._id} value={lang._id}>{lang.language}</Select.Option>
                             ))}
                         </Select>
                     </Form.Item>
                     <Form.Item name="languagelevel_id" label="Trình độ" rules={[{ required: true, message: 'Vui lòng chọn trình độ!' }]}>
                         <Select placeholder="Chọn trình độ">
                             {languagelevel.map(cat => (
-                                <Select.Option key={cat.id} value={cat.id}>{cat.name}</Select.Option>
+                                <Select.Option key={cat._id} value={cat._id}>{cat.language_level}</Select.Option>
                             ))}
                         </Select>
                     </Form.Item>
                     <Form.Item name="teacher_id" label="Giảng viên" rules={[{ required: true, message: 'Vui lòng chọn giảng viên!' }]}>
                         <Select placeholder="Chọn giảng viên">
                             {teachers.map(teacher => (
-                                <Select.Option key={teacher.id} value={teacher.id}>{teacher.name}</Select.Option>
+                                <Select.Option key={teacher.id} value={teacher._id}>{teacher.full_name}</Select.Option>
                             ))}
                         </Select>
                     </Form.Item>
-                    <Form.Item name="start_date" label="Ngày bắt đầu" rules={[{ required: true, message: 'Vui lòng chọn ngày bắt đầu!' }]}>
+                    <Form.Item name="Start_Date" label="Ngày bắt đầu" rules={[{ required: true, message: 'Vui lòng chọn ngày bắt đầu!' }]}>
                         <Input type="date" />
                     </Form.Item>
 
-                    <Form.Item name="number_of_sessions" label="Số tiết" rules={[{ required: true, message: 'Vui lòng nhập số tiết!' }]}>
+                    <Form.Item name="Number_of_periods" label="Số tiết" rules={[{ required: true, message: 'Vui lòng nhập số tiết!' }]}>
                         <Input type="number" min={1} />
                     </Form.Item>
 
-                    <Form.Item name="description" label="Mô tả">
+                    <Form.Item name="Description" label="Mô tả">
                         <Input.TextArea rows={3} allowClear />
                     </Form.Item>
 
-                    <Form.Item name="tuition_fee" label="Học phí (VNĐ)" rules={[{ required: true, message: 'Vui lòng nhập học phí!' }]}>
+                    <Form.Item name="Tuition" label="Học phí (VNĐ)" rules={[{ required: true, message: 'Vui lòng nhập học phí!' }]}>
                         <Input type="number" min={0} />
                     </Form.Item>
 
