@@ -22,7 +22,11 @@ app.use('/api/languagelevel', require('./routes/languagelevel'));
 app.use('/api/teacher', require('./routes/teacher'));
 app.use('/api/course', require('./routes/course'));
 
-const PORT = process.env.PORT || 3005;
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-});
+if (require.main === module) {
+    const PORT = process.env.PORT || 3005;
+    app.listen(PORT, () => {
+        console.log(`Server is running on http://localhost:${PORT}`);
+    });
+}
+
+module.exports = app;
