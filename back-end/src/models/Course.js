@@ -1,9 +1,13 @@
 const mongoose = require('mongoose');
 
-const CourseSchema = new mongoose.Schema({
-  name_course: { type: String, required: true },
+const CourseSchema = new mongoose.Schema({  
+  language_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Language' },
+  languagelevel_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Language_Level' },
   teacher_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Teacher' },
-  language_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Language' }
+  Start_Date: {type: Date},
+  Number_of_periods: {type: Number},
+  Tuition: {type: Number},
+  Description: {type: String}
 });
 
 module.exports = mongoose.model('Course', CourseSchema);

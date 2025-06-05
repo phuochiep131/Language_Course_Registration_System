@@ -57,14 +57,14 @@ function UpdateCourse() {
       setLanguageLevels(levelRes.data);
       setTeachers(teacherRes.data);
 
-      form.setFieldsValue({
+      form.setFieldsValue({        
         language_id: courseRes.data.language_id,
         languagelevel_id: courseRes.data.languagelevel_id,
         teacher_id: courseRes.data.teacher_id,
-        start_date: courseRes.data.start_date?.slice(0, 10), // loại bỏ phần thời gian
-        number_of_sessions: courseRes.data.number_of_sessions,
-        tuition_fee: courseRes.data.tuition_fee,
-        description: courseRes.data.description,
+        Start_Date: courseRes.data.Start_Date?.slice(0, 10),
+        Number_of_periods: courseRes.data.Number_of_periods,
+        Tuition: courseRes.data.Tuition,
+        Description: courseRes.data.Description,
       });
     } catch (error) {
       console.error("Lỗi khi lấy dữ liệu khóa học:", error);
@@ -121,8 +121,8 @@ function UpdateCourse() {
         >
           <Select placeholder="Chọn ngôn ngữ">
             {languages.map((lang) => (
-              <Select.Option key={lang.id} value={lang.id}>
-                {lang.name}
+              <Select.Option key={lang._id} value={lang._id}>
+                {lang.language}
               </Select.Option>
             ))}
           </Select>
@@ -135,8 +135,8 @@ function UpdateCourse() {
         >
           <Select placeholder="Chọn trình độ">
             {languageLevels.map((lv) => (
-              <Select.Option key={lv.id} value={lv.id}>
-                {lv.name}
+              <Select.Option key={lv._id} value={lv._id}>
+                {lv.language_level}
               </Select.Option>
             ))}
           </Select>
@@ -149,15 +149,15 @@ function UpdateCourse() {
         >
           <Select placeholder="Chọn giảng viên">
             {teachers.map((t) => (
-              <Select.Option key={t.id} value={t.id}>
-                {t.name}
+              <Select.Option key={t._id} value={t._id}>
+                {t.full_name}
               </Select.Option>
             ))}
           </Select>
         </Form.Item>
 
         <Form.Item
-          name="start_date"
+          name="Start_Date"
           label="Ngày bắt đầu"
           rules={[{ required: true, message: "Vui lòng chọn ngày bắt đầu!" }]}
         >
@@ -165,7 +165,7 @@ function UpdateCourse() {
         </Form.Item>
 
         <Form.Item
-          name="number_of_sessions"
+          name="Number_of_periods"
           label="Số tiết"
           rules={[{ required: true, message: "Vui lòng nhập số tiết!" }]}
         >
@@ -173,14 +173,14 @@ function UpdateCourse() {
         </Form.Item>
 
         <Form.Item
-          name="tuition_fee"
+          name="Tuition"
           label="Học phí (VNĐ)"
           rules={[{ required: true, message: "Vui lòng nhập học phí!" }]}
         >
           <Input type="number" min={0} />
         </Form.Item>
 
-        <Form.Item name="description" label="Mô tả">
+        <Form.Item name="Description" label="Mô tả">
           <Input.TextArea rows={3} allowClear />
         </Form.Item>
 
