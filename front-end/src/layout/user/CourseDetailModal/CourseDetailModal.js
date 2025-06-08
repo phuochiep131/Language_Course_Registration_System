@@ -8,14 +8,15 @@ const CourseDetailModal = ({ course, onClose }) => {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <h2>Thông tin khóa học</h2>
-        <p><strong>Ngôn ngữ:</strong> {course.language}</p>
-        <p><strong>Trình độ:</strong> {course.level}</p>
-        <p><strong>Ngày bắt đầu:</strong> {course.startDate}</p>
-        <p><strong>Lịch học:</strong> {course.schedule}</p>
-        <p><strong>Số tiết:</strong> {course.lessons}</p>
-        <p><strong>Giảng viên:</strong> {course.teacher}</p>
-        <p><strong>Mô tả:</strong> {course.description}</p>
-        <p><strong>Học phí:</strong> {course.fee} VND</p>
+
+        <p><strong>Ngôn ngữ:</strong> {course.language?.language || "Chưa rõ"}</p>
+        <p><strong>Trình độ:</strong> {course.level?.language_level || "Chưa rõ"}</p>
+        <p><strong>Ngày bắt đầu:</strong> {new Date(course.Start_Date).toLocaleDateString("vi-VN")}</p>
+        <p><strong>Số tiết:</strong> {course.Number_of_periods || "Chưa rõ"}</p>
+        <p><strong>Giảng viên:</strong> {course.teacher?.full_name || "Đang cập nhật"}</p>
+        <p><strong>Học phí:</strong> {course.Tuition?.toLocaleString() || "0"} VND</p>
+        <p><strong>Mô tả:</strong> {course.Description || "Không có mô tả"}</p>        
+
         <button className="close-button" onClick={onClose}>Đóng</button>
       </div>
     </div>

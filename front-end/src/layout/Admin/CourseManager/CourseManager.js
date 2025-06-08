@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Table, Flex, Breadcrumb, Modal, Form, Input, Select, Spin, Badge } from 'antd';
+import { Button, Table, Flex, Breadcrumb, Modal, Form, Input, Select, Spin } from 'antd';
 import axios from 'axios';
 
 import { Link } from "react-router-dom";
@@ -20,10 +20,10 @@ function CourseManager() {
             dataIndex: 'language_id',
             render: (langId) => {
                 const lang = languages.find(l => l._id === langId);
-                return <Badge color="blue" count={lang ? lang.language : langId} />;
+                return lang ? lang.language : langId;
             },
             filters: languages.map(lang => ({
-                text: lang.name,
+                text: lang.language,
                 value: lang._id,
             })),
             onFilter: (value, record) => record.language_id === value,
@@ -66,9 +66,9 @@ function CourseManager() {
         },    
         {
             title: 'Sửa',
-            dataIndex: '_id',
+            dataIndex: 'id',
             render: (_, record) => (
-                <Link to={`update/${record._id}`}>Sửa</Link>
+                <Link to={`update/${record.id}`}>Sửa</Link>
             ),
             width: 60,
             align: "center"
@@ -88,7 +88,7 @@ function CourseManager() {
         .then(([courseRes, langRes, teacherRes, languagelevelRes]) => {
             setCourses(courseRes.data.map(course => ({
                 ...course,
-                key: course._id,
+                key: course.id,
             })));
             setLanguages(langRes.data);
             setTeachers(teacherRes.data);

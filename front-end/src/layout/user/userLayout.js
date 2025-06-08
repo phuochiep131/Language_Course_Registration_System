@@ -5,8 +5,7 @@ import Header from "../../components/Header/Header";
 // import LeftNav from "../../components/LeftNav/LeftNav";
 import Home from "./Home/Home";
 import Courses from "./Courses/Courses";
-import RegisteredCourses from "./Registered-Courses/RegisteredCourses";
-// import Search from "../Search/Search";
+// import RegisteredCourses from "./Registered-Courses/RegisteredCourses";
 
 import "./userLayout.css";
 
@@ -34,9 +33,7 @@ function UserLayout() {
                     <div className="content-fill">
                         <Routes>
                             <Route path="/" element={<Home />} />
-                            <Route path="/songs" element={<Courses />} />
-                            <Route path="/search" element={<RegisteredCourses />} />
-                            {/* <Route path="/screens/:id" element={<Screens />} /> */}
+                            <Route path="/courses" element={<Courses />} />                                                        
                         </Routes>
                     </div>
                 {/* </div> */}
