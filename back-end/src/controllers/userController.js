@@ -146,14 +146,28 @@ const updateUserById = async (req, res) => {
         if (req.body.avatar) {
             user.avatar = req.body.avatar;
         }
-
-        // Lưu các thay đổi
         await user.save();
-
-        // Trả về thông tin người dùng sau khi cập nhật
         res.json(user);
     } catch (error) {
         console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
+const addRegistrationCourse = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const { course_id } = req.body;
+
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        user.registrationCourses.push({ course_id });
+        await user.save();
+
+        res.json({ message: 'Registration added successfully', user });
+    } catch (err) {
+        console.error(err);
         res.status(500).json({ message: 'Internal Server Error' });
     }
 };
@@ -163,5 +177,6 @@ module.exports = {
     getUserById,
     getCurrentUser,
     updateUserById,
-    deleteUsersByIds
+    deleteUsersByIds,
+    addRegistrationCourse
 };
