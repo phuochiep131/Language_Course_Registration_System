@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Table, Flex, Breadcrumb, Modal, Form, Input, Select, Spin, Badge } from 'antd';
+import { Button, Table, Flex, Breadcrumb, Modal, Form, Input, Select, Spin } from 'antd';
 import axios from 'axios';
 
 import { Link } from "react-router-dom";
@@ -20,10 +20,10 @@ function CourseManager() {
             dataIndex: 'language_id',
             render: (langId) => {
                 const lang = languages.find(l => l._id === langId);
-                return <Badge color="blue" count={lang ? lang.language : langId} />;
+                return lang ? lang.language : langId;
             },
             filters: languages.map(lang => ({
-                text: lang.name,
+                text: lang.language,
                 value: lang._id,
             })),
             onFilter: (value, record) => record.language_id === value,
@@ -67,10 +67,9 @@ function CourseManager() {
         {
             title: 'Sửa',
             dataIndex: 'id',
-            render: (_, record) => {                
-                return <Link to={`update/${record.id}`}>Sửa</Link>;
-            },
-
+            render: (_, record) => (
+                <Link to={`update/${record.id}`}>Sửa</Link>
+            ),
             width: 60,
             align: "center"
         }
@@ -87,14 +86,11 @@ function CourseManager() {
             axios.get('http://localhost:3005/api/languagelevel', { withCredentials: true }),
         ])
         .then(([courseRes, langRes, teacherRes, languagelevelRes]) => {
-            setCourses(courseRes.data.map(course => {
-                //console.log("Course item:", course);
-                return {
-                    ...course,
-                    key: course.id
-                };
-            }));
 
+            setCourses(courseRes.data.map(course => ({
+                ...course,
+                key: course.id,
+            })));
             setLanguages(langRes.data);
             setTeachers(teacherRes.data);
             setlanguagelevel(languagelevelRes.data);

@@ -114,7 +114,7 @@ function UpdateCourse() {
         form={form}
         layout="vertical"
         onFinish={onFinish}
-        style={{ maxWidth: 600, margin: "0 auto" }}
+        style={{ maxWidth: 600, minWidth:350, margin: "0 auto" }}
       >
         <Form.Item
           name="language_id"
