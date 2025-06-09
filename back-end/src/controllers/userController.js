@@ -158,6 +158,7 @@ const addRegistrationCourse = async (req, res) => {
     try {
         const userId = req.params.id;
         const { course_id } = req.body;
+        console.log(course_id)
 
         const user = await User.findById(userId);
         if (!user) return res.status(404).json({ message: 'User not found' });
@@ -172,11 +173,32 @@ const addRegistrationCourse = async (req, res) => {
     }
 };
 
+const getRegisteredCourses = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const user = await User.findById(userId).populate('registrationCourses.course_id');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const registeredCourses = user.registrationCourses.map((rc) => ({
+      course: rc.course_id,
+      enrollment_date: rc.enrollment_date,
+    }));
+
+    res.json(registeredCourses);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
 module.exports = {
     getAllUsers,
     getUserById,
     getCurrentUser,
     updateUserById,
     deleteUsersByIds,
-    addRegistrationCourse
+    addRegistrationCourse,
+    getRegisteredCourses
 };
