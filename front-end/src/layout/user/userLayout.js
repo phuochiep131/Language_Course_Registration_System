@@ -6,6 +6,7 @@ import Header from "../../components/Header/Header";
 import Home from "./Home/Home";
 import Courses from "./Courses/Courses";
 // import RegisteredCourses from "./Registered-Courses/RegisteredCourses";
+import UserAcc from "./UserAccount/UserAccount";
 
 import "./userLayout.css";
 
@@ -33,7 +34,8 @@ function UserLayout() {
                     <div className="content-fill">
                         <Routes>
                             <Route path="/" element={<Home />} />
-                            <Route path="/courses" element={<Courses />} />                                                        
+                            <Route path="/courses" element={<Courses />} />
+                            <Route path="/user/account/:id" element={<UserAcc />} />                                                        
                         </Routes>
                     </div>
                 {/* </div> */}

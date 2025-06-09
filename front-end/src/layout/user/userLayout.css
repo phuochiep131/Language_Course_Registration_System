@@ -11,7 +11,7 @@
     flex-direction: column;
     flex: 1;
     background-color: rgb(243, 243, 243);
-    min-height:150vh;
+    min-height:130vh;
     justify-content: space-between;
     overflow-y: auto;
     padding-top: 100px;

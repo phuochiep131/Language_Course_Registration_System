@@ -40,30 +40,6 @@ function Courses() {
       setSpinning(false);
     }
   };
-  const getRandomColor = () => {
-  const darkColors = [
-    "#1F2937", // xanh đen
-  "#B91C1C", // đỏ đậm
-  "#C2410C", // cam nâu
-  "#1E3A8A", // xanh navy
-  "#6B21A8", // tím đậm
-  "#14532D", // xanh lá đậm
-  "#0F172A", // xanh xám đậm
-  "#4B5563", // xám đậm
-  "#3F3F46", // ghi than
-  "#7C3AED", // tím sáng
-  ];
-  return darkColors[Math.floor(Math.random() * darkColors.length)];
-};
-
-
-  const languageColors = useMemo(() => {
-  const colors = {};
-  languages.forEach(lang => {
-    colors[lang._id] = getRandomColor();
-  });
-  return colors;
-}, [languages]);
 
   useEffect(() => {
     fetchData();
@@ -83,7 +59,7 @@ function Courses() {
             <div className="course-list">
           {coursesInLang.map((course) => (
             <div className="course-card" key={course._id}>
-              <div className="top-half" style={{ backgroundColor: languageColors[lang._id]}}>
+              <div className="top-half">
                 <div className="language">
                   KHÓA HỌC {course.language?.language?.toUpperCase() || "CHƯA RÕ"}
                 </div>

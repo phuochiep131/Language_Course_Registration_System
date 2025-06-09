@@ -10,43 +10,44 @@ function Header() {
   const location = useLocation();
   const [popupDisplay, setPopupDisplay] = useState(false);
 
-  const [currentUser, setCurrentUser] = useState()
+  const [currentUser, setCurrentUser] = useState();
 
   const fecthUserData = () => {
-    axios.get(`http://localhost:3005/api/user/info`, {
-        withCredentials: true
-    })
-        .then(response => {
-            console.log(response.data);
-            setCurrentUser(response.data);
-        })
-        .catch(error => {
-            console.log(error);
-        });
-}
-
-  const handleLogout = () => {
-    axios.get(`http://localhost:3005/api/auth/logout`, {
-        withCredentials: true
-    })
-        .then(response => {
-            console.log(response.data);
-            window.location.reload();
-        })
-        .catch(error => {
-            // console.log(error);
-        });
-}
-
-const handleLoginClick = () => {
-
-  const stateData = {
-      action: "redirect",
-      url: location.pathname
+    axios
+      .get(`http://localhost:3005/api/user/info`, {
+        withCredentials: true,
+      })
+      .then((response) => {
+        console.log(response.data);
+        setCurrentUser(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
-  navigate('/login', { state: stateData });
-}
+  const handleLogout = () => {
+    axios
+      .get(`http://localhost:3005/api/auth/logout`, {
+        withCredentials: true,
+      })
+      .then((response) => {
+        console.log(response.data);
+        navigate("/");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const handleLoginClick = () => {
+    const stateData = {
+      action: "redirect",
+      url: location.pathname,
+    };
+
+    navigate("/login", { state: stateData });
+  };
 
   useEffect(() => {
     fecthUserData();
@@ -83,16 +84,19 @@ const handleLoginClick = () => {
           <ion-icon name="book"></ion-icon>
           <span>Khóa học</span>
         </Link>
-
-        <Link
-          className={`Header_nav_item ${
-            isActive("/my-courses") ? "active" : ""
-          }`}
-          to="/my-courses"
-        >
-          <ion-icon name="school"></ion-icon>
-          <span>Khóa học của tôi</span>
-        </Link>
+        {currentUser && (
+          <>
+            <Link
+              className={`Header_nav_item ${
+                isActive("/my-courses") ? "active" : ""
+              }`}
+              to="/my-courses"
+            >
+              <ion-icon name="school"></ion-icon>
+              <span>Khóa học của tôi</span>
+            </Link>
+          </>
+        )}
       </div>
 
       {/* Tài khoản */}
@@ -129,11 +133,15 @@ const handleLoginClick = () => {
                     <span>Admin Dashboard</span>
                   </a>
                 )}
-                <a href="/">
+                <Link to={`/user/account/${currentUser._id}`}>
                   <ion-icon name="person-circle-outline"></ion-icon>
                   <span>Tài khoản</span>
-                </a>
-                <div className="avatar_popup_option" onClick={() => handleLogout()}>
+                </Link>
+
+                <div
+                  className="avatar_popup_option"
+                  onClick={() => handleLogout()}
+                >
                   <a href="/">
                     <ion-icon name="log-out-outline"></ion-icon>
                     <span>Đăng xuất</span>
@@ -145,10 +153,7 @@ const handleLoginClick = () => {
         </div>
       ) : (
         <div className="Header_auth_buttons">
-          <button
-            className="Login_button"
-            onClick={() => handleLoginClick()}
-          >
+          <button className="Login_button" onClick={() => handleLoginClick()}>
             Đăng nhập
           </button>
           <button
