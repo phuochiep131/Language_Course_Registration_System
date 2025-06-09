@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
-import { Spin } from "antd";
+import { Spin, message } from "antd";
 // import "./Courses.css";
 import CourseDetailModal from "../CourseDetailModal/CourseDetailModal";
 
@@ -8,7 +8,62 @@ function Courses() {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [featuredCourses, setFeaturedCourses] = useState([]);
   const [languages, setLanguages] = useState([]);
-  const [spinning, setSpinning] = useState(false);
+  const [spinning, setSpinning] = useState(false);  
+  const [userId, setUserId] = useState(null);
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const successMessage = () => {
+    messageApi.open({
+      type: "success",
+      content: "Đăng ký thành công!",
+    });
+  };
+
+  const errorMessage = (msg = "Đăng ký thất bại. Vui lòng thử lại.") => {
+    messageApi.open({
+      type: "error",
+      content: msg,
+    });
+  };
+
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const res = await axios.get('http://localhost:3005/api/user/info', { withCredentials: true });
+        setUserId(res.data._id);
+      } catch (err) {
+        console.error("Không thể lấy thông tin người dùng:", err);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
+
+  const handleRegister = async (courseId) => {
+    if (!userId) {
+      errorMessage("Hãy đăng nhập để tiếp tục!");
+      return;
+    }
+    try {
+      const response = await axios.post(`http://localhost:3005/api/user/${userId}/register-course`,
+        { course_id: courseId },
+        { withCredentials: true }
+      );
+
+      if (response.status === 200) {
+        successMessage();
+      } else {
+        errorMessage();
+      }
+    } catch (error) {
+      console.error("Lỗi khi đăng ký khóa học:", error);
+      errorMessage();
+    }
+  };
+
+
 
   const fetchData = async () => {
     setSpinning(true);
@@ -20,7 +75,7 @@ function Courses() {
         axios.get("http://localhost:3005/api/teacher", { withCredentials: true }),
       ]);
 
-      const courses = courseRes.data;
+      const courses = courseRes.data;      
       const languages = langRes.data;
       const levels = levelRes.data;
       const teachers = teacherRes.data;
@@ -47,6 +102,7 @@ function Courses() {
 
   return (
     <div className="allcourses-page">
+      {contextHolder}
       <Spin spinning={spinning} fullscreen />
 
       {languages.map((lang) => {
@@ -91,7 +147,9 @@ function Courses() {
                   <button className="properties-course" onClick={() => setSelectedCourse(course)}>
                     Chi tiết
                   </button>
-                  <button className="sign-up-course">Đăng ký</button>
+                  <button className="sign-up-course" onClick={() => handleRegister(course.id)}>
+                    Đăng ký
+                  </button>
                 </div>
               </div>
             </div>
