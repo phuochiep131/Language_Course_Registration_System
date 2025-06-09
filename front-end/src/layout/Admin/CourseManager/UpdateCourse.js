@@ -41,6 +41,7 @@ function UpdateCourse() {
   const fetchData = async () => {
     setSpinning(true);
     try {
+      console.log(id)
       // Load dữ liệu khóa học cụ thể
       const courseRes = await axios.get(`http://localhost:3005/api/course/${id}`, {
         withCredentials: true,
@@ -57,7 +58,8 @@ function UpdateCourse() {
       setLanguageLevels(levelRes.data);
       setTeachers(teacherRes.data);
 
-      form.setFieldsValue({        
+      form.setFieldsValue({      
+        //_id: courseRes.data._id,  
         language_id: courseRes.data.language_id,
         languagelevel_id: courseRes.data.languagelevel_id,
         teacher_id: courseRes.data.teacher_id,

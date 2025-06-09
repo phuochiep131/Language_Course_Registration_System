@@ -66,10 +66,11 @@ function CourseManager() {
         },    
         {
             title: 'Sửa',
-            dataIndex: '_id',
-            render: (_, record) => (
-                <Link to={`update/${record._id}`}>Sửa</Link>
-            ),
+            dataIndex: 'id',
+            render: (_, record) => {                
+                return <Link to={`update/${record.id}`}>Sửa</Link>;
+            },
+
             width: 60,
             align: "center"
         }
@@ -86,14 +87,19 @@ function CourseManager() {
             axios.get('http://localhost:3005/api/languagelevel', { withCredentials: true }),
         ])
         .then(([courseRes, langRes, teacherRes, languagelevelRes]) => {
-            setCourses(courseRes.data.map(course => ({
-                ...course,
-                key: course._id,
-            })));
+            setCourses(courseRes.data.map(course => {
+                //console.log("Course item:", course);
+                return {
+                    ...course,
+                    key: course.id
+                };
+            }));
+
             setLanguages(langRes.data);
             setTeachers(teacherRes.data);
             setlanguagelevel(languagelevelRes.data);
-            setSpinning(false);
+            setSpinning(false);       
+            
         })
         .catch(err => {
             console.error(err);
@@ -153,13 +159,16 @@ function CourseManager() {
 
             <Table
             rowKey="id"
-                rowSelection={{
-                    selectedRowKeys,
-                    onChange: setSelectedRowKeys
-                }}
-                columns={columns}
-                dataSource={courses}
-                bordered
+            rowSelection={{
+                selectedRowKeys,
+                onChange: (selectedKeys) => {
+                    //console.log("Selected:", selectedKeys);
+                    setSelectedRowKeys(selectedKeys);
+                    }
+            }}
+            columns={columns}
+            dataSource={courses}
+            bordered
             />
 
             {/* Modal xác nhận xoá */}
