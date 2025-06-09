@@ -86,6 +86,7 @@ function CourseManager() {
             axios.get('http://localhost:3005/api/languagelevel', { withCredentials: true }),
         ])
         .then(([courseRes, langRes, teacherRes, languagelevelRes]) => {
+
             setCourses(courseRes.data.map(course => ({
                 ...course,
                 key: course.id,
@@ -93,7 +94,8 @@ function CourseManager() {
             setLanguages(langRes.data);
             setTeachers(teacherRes.data);
             setlanguagelevel(languagelevelRes.data);
-            setSpinning(false);
+            setSpinning(false);       
+            
         })
         .catch(err => {
             console.error(err);
@@ -153,13 +155,16 @@ function CourseManager() {
 
             <Table
             rowKey="id"
-                rowSelection={{
-                    selectedRowKeys,
-                    onChange: setSelectedRowKeys
-                }}
-                columns={columns}
-                dataSource={courses}
-                bordered
+            rowSelection={{
+                selectedRowKeys,
+                onChange: (selectedKeys) => {
+                    //console.log("Selected:", selectedKeys);
+                    setSelectedRowKeys(selectedKeys);
+                    }
+            }}
+            columns={columns}
+            dataSource={courses}
+            bordered
             />
 
             {/* Modal xác nhận xoá */}
