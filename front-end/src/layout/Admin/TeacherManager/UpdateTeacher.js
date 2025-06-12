@@ -175,6 +175,7 @@ function UpdateTeacher() {
                 teacherData &&
                 <Form
                     name="update_teacher"
+                    layout='vertical'
                     style={{ width: 400, margin: "0 auto" }}
                     initialValues={{
                         name: teacherData.full_name,
@@ -183,10 +184,15 @@ function UpdateTeacher() {
                     }}
                     onFinish={onFinish}
                 >
-                    <Form.Item name="name">
+                    <Form.Item name="name"
+                    label="Họ và tên"
+                    rules={[{ required: true, message: "Vui lòng nhập họ và tên!" }]}>
                         <Input prefix={<SmileOutlined />} placeholder="Họ và tên" allowClear size="large" />
                     </Form.Item>
-                    <Form.Item name="email">
+                    <Form.Item name="email"
+                    label="Email"
+                    rules={[{ required: true, message: "Vui lòng nhập email!" }]}
+                    >
                         <Input prefix={<MailOutlined />} placeholder="Email" allowClear size="large" />
                     </Form.Item>
                     {/* <Form.Item name="username">
@@ -197,6 +203,7 @@ function UpdateTeacher() {
                     </Form.Item> */}
                     <Form.Item 
                     name="language"
+                    label="Ngôn ngữ giảng dạy"
                     rules={[{ required: true, message: "Vui lòng chọn ngôn ngữ!" }]}
                     >
                         <Select placeholder="Chọn ngôn ngữ">

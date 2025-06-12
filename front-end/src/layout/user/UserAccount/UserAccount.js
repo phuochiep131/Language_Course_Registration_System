@@ -5,7 +5,7 @@ import {
   SmileOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Button, Flex, Form, Input, Spin, Upload, message } from "antd";
+import { Button, Flex, Form, Input, Spin, message } from "antd";
 import { useEffect, useState } from "react";
 import imageCompression from "browser-image-compression";
 import axios from "axios";
@@ -177,7 +177,8 @@ function UserAcc() {
       {userData && (
         <Form
           name="update_user"
-          style={{ width: "400px", margin: "0 auto" }}
+          layout="vertical"
+          style={{ minWidth: "400px", margin: "0 auto" }}
           initialValues={{
             name: userData.fullname,
             email: userData.email,
@@ -191,15 +192,15 @@ function UserAcc() {
           >
             Thông tin tài khoản
           </Title>
-          <Form.Item name="name">
+          <Form.Item name="name" label="Họ và tên" rules={[{ required: true, message: "Vui lòng nhập họ và tên!" }]}>
             <Input
               prefix={<SmileOutlined />}
-              placeholder="Họ và tên"
+              placeholder="Nhập họ và tên"
               allowClear
               size="large"
             />
           </Form.Item>
-          <Form.Item name="email">
+          <Form.Item name="email" label="Email" rules={[{ required: true, message: "Vui lòng nhập Email!" }]}>
             <Input
               prefix={<MailOutlined />}
               placeholder="Email"
@@ -207,34 +208,14 @@ function UserAcc() {
               size="large"
             />
           </Form.Item>
-          <Form.Item name="username">
+          <Form.Item name="username" label="Tên đăng nhập" rules={[{ required: true, message: "Vui lòng nhập tên đăng nhập!" }]}>
             <Input
               prefix={<UserOutlined />}
               placeholder="Tên đăng nhập"
               allowClear
               size="large"
             />
-          </Form.Item>
-          <Form.Item name="password">
-            <Input.Password
-              prefix={<LockOutlined />}
-              placeholder="Mật khẩu mới"
-              allowClear
-              size="large"
-            />
-          </Form.Item>
-          <Form.Item name="avatar">
-            <Upload
-              listType="picture-card"
-              fileList={fileList}
-              onChange={onChange}
-              beforeUpload={() => false}
-              onPreview={onPreview}
-              maxCount={1}
-            >
-              Tải ảnh
-            </Upload>
-          </Form.Item>
+          </Form.Item>                   
           <Form.Item>
             <Button
               type="primary"
