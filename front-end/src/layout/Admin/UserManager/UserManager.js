@@ -51,7 +51,7 @@ function UserManager() {
             render: (_id) =>
                 <Link to={`update/${_id}`}>
                     {/* <i className="fa-solid fa-pen-to-square" style={{ color: "#00CC77", fontSize: "18px" }}></i> */}
-                    suaa
+                    Sửa
                 </Link>,
             width: 60,
             align: "center"

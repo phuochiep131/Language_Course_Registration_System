@@ -201,12 +201,13 @@ function UpdateUser() {
                 <Form
                     name="dream_login"
                     className="login-form"
+                    layout='vertical'
                     style={{
                         width: "400px",
                         margin: "0 auto",
                     }}
                     initialValues={{
-                        name: userData.name,
+                        name: userData.fullname,
                         email: userData.email,
                         username: userData.username,
                         role: userData.role,
@@ -215,34 +216,42 @@ function UpdateUser() {
                 >
                     <Form.Item
                         name="name"
+                        label="Họ và tên"
+                        rules={[{ required: true, message: "Vui lòng nhập họ và tên!" }]}
                     >
                         <Input prefix={<SmileOutlined className="site-form-item-icon" />} placeholder="Họ và tên" allowClear size="large" />
                     </Form.Item>
                     <Form.Item
                         name="email"
+                        label="Email"
+                        rules={[{ required: true, message: "Vui lòng nhập email!" }]}
                     >
                         <Input prefix={<MailOutlined className="site-form-item-icon" />} placeholder="Email" allowClear size="large" />
                     </Form.Item>
                     <Form.Item
                         name="username"
+                        label="Tên đăng nhập"
+                        rules={[{ required: true, message: "Vui lòng nhập tên đăng nhập!" }]}
                     >
                         <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Tên đăng nhập" allowClear size="large" />
                     </Form.Item>
                     <Form.Item
                         name="password"
+                        label="Mật khẩu"
                     >
                         <Input.Password
                             prefix={<LockOutlined className="site-form-item-icon" />}
                             type="password"
-                            placeholder="Mật khẩu"
+                            placeholder="Nhập mật khẩu"
                             allowClear
                             size="large"
                         />
                     </Form.Item>
                     <Form.Item
                         name="role"
+                        label="Tài khoản"
                     >
-                        <Select placeholder="Loại tài khoản" prefix={<FireOutlined className="site-form-item-icon" />} size="large">
+                        <Select placeholder="Loại tài khoản" size="large">
                             <Select.Option value="Student">Student</Select.Option>                       
                             <Select.Option value="Admin">Admin</Select.Option>
                         </Select>

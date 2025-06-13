@@ -43,7 +43,7 @@ function getItem(label, key, icon, children) {
 }
 
 const items = [
-    getItem(<Link to="/admin">Tổng quan</Link>, 'overview', <PieChartOutlined />),
+    // getItem(<Link to="/admin">Tổng quan</Link>, 'overview', <PieChartOutlined />),
     getItem(<Link to="/admin/users">Quản lý người dùng</Link>, 'users', <UserOutlined />),
     getItem(<Link to="/admin/languages">Quản lý ngôn ngữ</Link>, 'languages', <GlobalOutlined />),
     getItem(<Link to="/admin/languageslevel">Quản lý trình độ</Link>, 'languageslevel', <BarChartOutlined />),

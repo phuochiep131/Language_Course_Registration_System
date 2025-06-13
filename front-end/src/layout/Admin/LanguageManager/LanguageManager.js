@@ -29,7 +29,7 @@ function LanguageManager() {
             render: (_id) =>
                 <Link to={`update/${_id}`}>
                     {/* <i className="fa-solid fa-pen-to-square" style={{ color: "#00CC77", fontSize: "18px" }}></i> */}
-                    suaaa
+                    Sửa
                 </Link>,
             width: 60,
             align: "center"
