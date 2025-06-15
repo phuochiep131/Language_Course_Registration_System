@@ -4,8 +4,6 @@ import {
     UserOutlined,
     BookOutlined,
     TeamOutlined,
-    CalendarOutlined,
-    PieChartOutlined,
     ExportOutlined,
     GlobalOutlined,
     BarChartOutlined,
@@ -28,6 +26,7 @@ import LanguageLevelManager from './LanguageLevelManager/LanguageLevelManager';
 import UpdateLanguageLevel from './LanguageLevelManager/UpdateLanguageLevel';
 import CourseManager from './CourseManager/CourseManager';
 import UpdateCourse from './CourseManager/UpdateCourse';
+import CourseRegistrationManager from './CourseRegistrationManager/CourseRegistrationManager';
 //import TeacherManager from './TeacherManager/TeacherManager';
 // import ScheduleManager from './ScheduleManager/ScheduleManager';
 
@@ -49,7 +48,7 @@ const items = [
     getItem(<Link to="/admin/languageslevel">Quản lý trình độ</Link>, 'languageslevel', <BarChartOutlined />),
     getItem(<Link to="/admin/teachers">Quản lý giảng viên</Link>, 'teachers', <TeamOutlined />),
     getItem(<Link to="/admin/courses">Quản lý khóa học</Link>, 'courses', <ReadOutlined />),
-
+    getItem(<Link to="/admin/registercourses">Quản lý đăng ký học</Link>, 'registercourses', <BookOutlined />),
     
     // getItem(<Link to="/admin/schedules">Quản lý lịch học</Link>, 'schedules', <CalendarOutlined />),
 ];
@@ -64,29 +63,30 @@ const AdminLayout = () => {
         location.pathname.startsWith('/admin/teachers') ? 'teachers' :
         location.pathname.startsWith('/admin/schedules') ? 'schedules' :
         location.pathname.startsWith('/admin/courses') ? 'courses' :
+        location.pathname.startsWith('/admin/registercourses') ? 'registercourses' :
         'overview';
 
     const [collapsed, setCollapsed] = useState(false);
     const [currentUser, setCurrentUser] = useState();
 
-    // const fetchUserData = () => {
-    //     axios.get(`http://localhost:3005/api/users/info`, { withCredentials: true })
-    //         .then(response => {
-    //             if (response.data.role !== "Admin") {
-    //                 navigate('/');
-    //             }
-    //             setCurrentUser(response.data);
-    //         })
-    //         .catch(() => navigate('/'));
-    // }
+    const fetchUserData = () => {
+        axios.get(`http://localhost:3005/api/user/info`, { withCredentials: true })
+            .then(response => {
+                if (response.data.role !== "Admin") {
+                    navigate('/');
+                }
+                setCurrentUser(response.data);
+            })
+            .catch(() => navigate('/'));
+    }
 
-    // useEffect(() => {
-    //     fetchUserData();
-    // }, []);
     useEffect(() => {
-        // Tạm set user là admin để test
-        setCurrentUser({ role: "Admin", name: "Test Admin" });
+        fetchUserData();
     }, []);
+    // useEffect(() => {
+    //     // Tạm set user là admin để test
+    //     setCurrentUser({ role: "Admin", name: "Test Admin" });
+    // }, []);
     
 
     return (
@@ -114,6 +114,7 @@ const AdminLayout = () => {
                             <Route path='languageslevel/update/:id' element={<UpdateLanguageLevel/>}/>
                             <Route path="courses" element={<CourseManager />} />
                             <Route path='courses/update/:id' element={<UpdateCourse/>}/>
+                            <Route path="registercourses" element={<CourseRegistrationManager/>} />
                             {/* <Route path="schedules" element={<ScheduleManager />} /> */}
                         </Routes>
                     </Layout>

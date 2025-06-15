@@ -5,7 +5,7 @@ import Header from "../../components/Header/Header";
 // import LeftNav from "../../components/LeftNav/LeftNav";
 import Home from "./Home/Home";
 import Courses from "./Courses/Courses";
-// import RegisteredCourses from "./Registered-Courses/RegisteredCourses";
+import RegisteredCourses from "./Registered-Courses/RegisteredCourses";
 import UserAcc from "./UserAccount/UserAccount";
 
 import "./userLayout.css";
@@ -35,7 +35,8 @@ function UserLayout() {
                         <Routes>
                             <Route path="/" element={<Home />} />
                             <Route path="/courses" element={<Courses />} />
-                            <Route path="/user/account/:id" element={<UserAcc />} />                                                        
+                            <Route path="/user/account/:id" element={<UserAcc />} />
+                            <Route path="/my-courses/:id" element={<RegisteredCourses />} />                                                        
                         </Routes>
                     </div>
                 {/* </div> */}

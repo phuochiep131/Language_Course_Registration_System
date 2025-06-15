@@ -106,7 +106,7 @@ function Home() {
                   <button className="properties-course" onClick={() => setSelectedCourse(course)}>
                     Chi tiết
                   </button>
-                  <button className="sign-up-course">Đăng ký</button>
+                  {/* <button className="sign-up-course">Đăng ký</button> */}
                 </div>
               </div>
             </div>

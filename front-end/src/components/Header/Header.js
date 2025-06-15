@@ -112,14 +112,15 @@ function Header() {
         {currentUser && (
           <>
             <Link
-              className={`Header_nav_item ${
-                isActive("/my-courses") ? "active" : ""
-              }`}
-              to="/my-courses"
-            >
-              <ion-icon name="school"></ion-icon>
-              <span>Khóa học của tôi</span>
-            </Link>
+  className={`Header_nav_item ${
+    isActive(`/my-courses/${currentUser?._id}`) ? "active" : ""
+  }`}
+  to={`/my-courses/${currentUser?._id}`}
+>
+  <ion-icon name="school"></ion-icon>
+  <span>Khóa học của tôi</span>
+</Link>
+
           </>
         )}
       </div>
@@ -153,7 +154,7 @@ function Header() {
                   </div>
                 </div>
                 {currentUser.role === "Admin" && (
-                  <a href="/admin" onClick={() => setPopupDisplay(false)}>
+                  <a href="/admin/users" onClick={() => setPopupDisplay(false)}>
                     <ion-icon name="settings-outline"></ion-icon>
                     <span>Admin Dashboard</span>
                   </a>
