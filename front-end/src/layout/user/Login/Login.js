@@ -44,6 +44,8 @@ function Login() {
         })
             .then(response => {
                 console.log(response.data);
+                localStorage.setItem('user', JSON.stringify(response.data.user));
+                console.log("Đã lưu user:", localStorage.getItem('user'));
                 setTimeout(() => {
                     successMessage();
                 }, 500)

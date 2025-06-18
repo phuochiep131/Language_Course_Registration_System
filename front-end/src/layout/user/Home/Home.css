@@ -6,12 +6,18 @@
 
 .homepage-banner {
   width: 100%;
-  height: 250px;
+  height: 350px;
   border-radius: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
+}
+
+.Header_logo img{
+  width: 60px;
+  height: 60px;
+  margin-left: 20px;
 }
 
 .homepage-banner > img {
