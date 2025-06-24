@@ -1,8 +1,6 @@
 const User = require("../models/user");
-//const Song = require('../models/song');
-const mongoose = require("mongoose");
+
 const bcrypt = require("bcrypt");
-//const Background = require('../models/background');
 
 const getAllUsers = async (req, res) => {
   try {
@@ -227,6 +225,84 @@ const unregisterCourse = async (req, res) => {
   }
 };
 
+const getAllRegisteredCourses = async (req, res) => {  
+  try {
+    const users = await User.find({
+      role: 'Student',
+      registrationCourses: { $exists: true, $ne: [] }
+    }).populate({
+      path: "registrationCourses.course_id",
+      populate: [
+        { path: "language_id" },
+        { path: "languagelevel_id" },
+        { path: "teacher_id" },
+      ],
+    });
+
+    const allRegisteredCourses = [];
+
+    users.forEach((user) => {
+      user.registrationCourses.forEach((rc) => {
+        if (rc.course_id) {
+          allRegisteredCourses.push({
+            user_id: user._id,
+            userid: user.userid,
+            name: user.fullname,
+            avatar: user.avatar,
+            course_id: rc.course_id._id,
+            courseid: rc.course_id.courseid,
+            language: rc.course_id.language_id?.language,
+            languagelevel: rc.course_id.languagelevel_id?.language_level,
+            teacher: rc.course_id.teacher_id?.full_name,
+            enrollment_date: rc.enrollment_date,
+          });
+        }
+      });
+    });
+
+    return res.json(allRegisteredCourses);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const updateRegistration = async (req, res) => {
+    const { userId, courseId } = req.params;
+    const { newCourseId } = req.body;
+    console.log(userId, courseId, newCourseId)
+
+    try {
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: 'Không tìm thấy người dùng' });
+        }
+        const index = user.registrationCourses.findIndex(
+            (reg) => reg.course_id.toString() === courseId
+        );
+
+        if (index === -1) {
+            return res.status(404).json({ message: 'Không tìm thấy đăng ký khóa học cần cập nhật' });
+        }
+        const existed = user.registrationCourses.find(
+            (reg) => reg.course_id.toString() === newCourseId
+        );
+        if (existed) {
+            return res.status(400).json({ message: 'Đã đăng ký khóa học này rồi' });
+        }
+        user.registrationCourses[index].course_id = newCourseId;
+        user.registrationCourses[index].enrollment_date = new Date();
+
+        await user.save();
+        res.status(200).json({ message: 'Success' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+
 module.exports = {
   getAllUsers,
   getUserById,
@@ -236,4 +312,6 @@ module.exports = {
   addRegistrationCourse,
   getRegisteredCourses,
   unregisterCourse,
+  getAllRegisteredCourses,
+  updateRegistration
 };

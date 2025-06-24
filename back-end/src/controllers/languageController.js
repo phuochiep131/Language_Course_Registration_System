@@ -11,9 +11,9 @@ const getLanguages = async (req, res) => {
 }
 
 const addLanguage = async (req, res) => {
-    const { language } = req.body
+    const { languageid ,language } = req.body
     try {
-        const newLanguage = new Language({ language })
+        const newLanguage = new Language({ languageid ,language })
         await newLanguage.save()
         res.status(201).json({ message: 'Language added successfully' })
     } catch (err) {

@@ -18,14 +18,32 @@ const getTeacherById = async (req, res) => {
   }
 };
 
+const randomid = async () => {    
+    let teacherid;
+    let isUnique = false;
+
+    while(!isUnique){
+        const randomNumber = Math.floor(Math.random() * 100000)
+        const formattedId = `GV${randomNumber.toString().padStart(6, '0')}`;
+
+        const existingId = await Teacher.findOne({ teacherid: formattedId });
+        if (!existingId) {
+            teacherid = formattedId;
+            isUnique = true;
+        }
+    }
+    return teacherid
+}
+
 const createTeacher = async (req, res) => {
-  console.log(req.body)
+  //console.log(req.body)
+  const teacherid = await randomid()
   try {
     const newTeacher = new Teacher({
+      teacherid: teacherid,
       full_name: req.body.full_name,
       gender: req.body.gender,
-      email: req.body.email,
-      // avatar: req.body.avatar,
+      email: req.body.email,      
       language_id: req.body.language_id
     });
     await newTeacher.save();
@@ -42,9 +60,6 @@ const updateTeacher = async (req, res) => {
       {
         full_name: req.body.full_name,
         email: req.body.email,
-        // username: req.body.username,
-        // password: req.body.password,
-        // avatar: req.body.avatar,
         language_id: req.body.language_id
       },
       { new: true }

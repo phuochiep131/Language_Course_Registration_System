@@ -6,12 +6,20 @@ const getAllCourses = async (req, res) => {
       .populate('language_id')
       .populate('languagelevel_id')
       .populate('teacher_id');
-    
+
     const result = courses.map(course => ({
       id: course._id.toString(),
+      courseid: course.courseid,
+
       language_id: course.language_id?._id.toString(),
+      language: course.language_id?.language || '',
+
       languagelevel_id: course.languagelevel_id?._id.toString(),
+      languagelevel: course.languagelevel_id?.language_level || '',
+
       teacher_id: course.teacher_id?._id.toString(),
+      teacher_name: course.teacher_id?.full_name || '',
+
       Start_Date: course.Start_Date,
       Number_of_periods: course.Number_of_periods,
       Tuition: course.Tuition,
@@ -23,6 +31,7 @@ const getAllCourses = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
 
 const getCourseById = async (req, res) => {
   const { id } = req.params;
@@ -39,9 +48,28 @@ const getCourseById = async (req, res) => {
   }
 };
 
+const randomid = async () => {    
+    let courseid;
+    let isUnique = false;
+
+    while(!isUnique){
+        const randomNumber = Math.floor(Math.random() * 1000)
+        const formattedId = `KH${randomNumber.toString().padStart(4, '0')}`;
+
+        const existingId = await Course.findOne({ courseid: formattedId });
+        if (!existingId) {
+            courseid = formattedId;
+            isUnique = true;
+        }
+    }
+    return courseid
+}
+
 const createCourse = async (req, res) => {
+  const courseid = await randomid()
   try {
     const newCourse = new Course({
+      courseid: courseid,
       language_id: req.body.language_id,
       languagelevel_id: req.body.languagelevel_id,
       teacher_id: req.body.teacher_id,

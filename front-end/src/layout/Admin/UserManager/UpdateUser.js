@@ -207,6 +207,7 @@ function UpdateUser() {
                         margin: "0 auto",
                     }}
                     initialValues={{
+                        userid: userData.userid,
                         name: userData.fullname,
                         email: userData.email,
                         username: userData.username,
@@ -214,6 +215,12 @@ function UpdateUser() {
                     }}
                     onFinish={onFinish}
                 >
+                    <Form.Item
+                        name="userid"
+                        label="Mã học viên"                        
+                    >
+                        <Input disabled />
+                    </Form.Item>
                     <Form.Item
                         name="name"
                         label="Họ và tên"

@@ -143,14 +143,15 @@ function Header() {
                 <div className="avatar_popup_name">
                   <img src={currentUser.avatar} alt="" />
                   <div>
-                    <div>{currentUser.fullname}</div>
+                    <div>{currentUser.fullname}</div>   
+                    Mã học viên: {currentUser.userid}
                     <span
                       className={
                         currentUser.role === "Admin" ? "badge-admin" : ""
                       }
                     >
                       {currentUser.role}
-                    </span>
+                    </span>                    
                   </div>
                 </div>
                 {currentUser.role === "Admin" && (

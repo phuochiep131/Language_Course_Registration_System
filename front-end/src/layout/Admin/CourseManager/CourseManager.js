@@ -13,8 +13,13 @@ function CourseManager() {
     const [languagelevel, setlanguagelevel] = useState([]);
     const [spinning, setSpinning] = useState(false);
     const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
+    const [filteredCourses, setFilteredCourses] = useState([]);
 
-    const columns = [       
+    const columns = [  
+        {
+            title: 'Mã khóa học',
+            dataIndex: 'courseid',
+        },     
         {
             title: 'Ngôn ngữ',
             dataIndex: 'language_id',
@@ -95,7 +100,7 @@ function CourseManager() {
             setTeachers(teacherRes.data);
             setlanguagelevel(languagelevelRes.data);
             setSpinning(false);       
-            
+            setFilteredCourses(courseRes.data)
         })
         .catch(err => {
             console.error(err);
@@ -138,12 +143,34 @@ function CourseManager() {
         .finally(() => setSpinning(false));
     };
 
+    const handleSearch = (value) => {
+        const keyword = value?.toString().toLowerCase().trim();
+
+        if (!keyword) {
+            setFilteredCourses(courses);
+            return;
+        }
+
+        const filtered = courses.filter(courses =>
+            String(courses.courseid || '').toLowerCase().includes(keyword)
+        );
+
+        setFilteredCourses(filtered);
+    };
+
     return (
         <Flex vertical gap={20} style={{ position: "relative" }}>
             <Spin spinning={spinning} fullscreen />
             <Breadcrumb items={[{ title: 'Admin Dashboard' }, { title: 'Quản lý khóa học' }]} />
-            <Flex>
-                <Button type="primary" onClick={showModal}>Thêm khóa học</Button>
+
+            <Flex gap={20}>
+                <Button type="primary" onClick={showModal}>Thêm khóa học</Button>                            
+                <Input.Search
+                    placeholder="Tìm theo mã khóa học"
+                    allowClear                    
+                    onChange={(e) => handleSearch(e.target.value.toString())}
+                    style={{ width: 250 }}
+                />                
             </Flex>
 
             {selectedRowKeys.length > 0 && (
@@ -163,7 +190,7 @@ function CourseManager() {
                     }
             }}
             columns={columns}
-            dataSource={courses}
+            dataSource={filteredCourses}
             bordered
             />
 
