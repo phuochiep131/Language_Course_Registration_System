@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const CourseSchema = new mongoose.Schema({  
+  courseid: { type: String, required: true, unique: true },
   language_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Language' },
   languagelevel_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Language_Level' },
   teacher_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Teacher' },

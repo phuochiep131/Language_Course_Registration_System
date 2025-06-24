@@ -12,11 +12,12 @@ function LanguageManager() {
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
     const [messageApi, contextHolder] = message.useMessage();
+    const [filteredLanguages, setFilteredLanguages] = useState([]);
 
     const columns = [
         {
             title: 'Mã ngôn ngữ',
-            dataIndex: '_id',
+            dataIndex: 'languageid',
             width: 200,
         },
         {
@@ -44,9 +45,11 @@ function LanguageManager() {
                     key: l._id,
                     _id: l._id,
                     language: l.language,
+                    languageid: l.languageid,
                 }));
 
                 setLanguages(data);
+                setFilteredLanguages(data)
             })
             .catch(err => console.error('Fetch error:', err));
     };
@@ -99,6 +102,29 @@ function LanguageManager() {
             .finally(() => setSpinning(false));
     };
 
+    const handleSearch = (value) => {
+        const keyword = value?.toString().toLowerCase().trim();
+
+        if (!keyword) {
+            setFilteredLanguages(languages);
+            return;
+        }
+
+        const filtered = languages.filter(language =>
+            String(language.languageid || '').toLowerCase().includes(keyword)
+        );
+
+        setFilteredLanguages(filtered);
+    };
+
+    const searchByName = (value) => {
+      const keyword = value?.toString().toLowerCase().trim();
+      const result = languages.filter(t =>
+          String(t.language || '').toLowerCase().includes(keyword)
+      );
+      setFilteredLanguages(result);
+    };
+
 
     useEffect(() => {
         fetchData();
@@ -113,9 +139,21 @@ function LanguageManager() {
                     { title: 'Admin Dashboard' },
                     { title: 'Quản lý ngôn ngữ' },
                 ]}
-            />
-            <Flex>
-                <Button type="primary" onClick={() => setOpen(true)}>Thêm ngôn ngữ</Button>
+            />            
+            <Flex gap={20}>
+                <Button type="primary" onClick={() => setOpen(true)}>Thêm ngôn ngữ</Button>              
+                <Input.Search
+                    placeholder="Tìm theo mã ngôn ngữ"
+                    allowClear                    
+                    onChange={(e) => handleSearch(e.target.value.toString())}
+                    style={{ width: 250 }}
+                />
+                <Input.Search
+                    placeholder="Tìm theo tên ngôn ngữ"
+                    allowClear                    
+                    onChange={(e) => searchByName(e.target.value.toString())}
+                    style={{ width: 250 }}
+                />
             </Flex>
 
             {selectedRowKeys.length > 0 &&
@@ -141,7 +179,7 @@ function LanguageManager() {
                     onChange: (newKeys) => setSelectedRowKeys(newKeys)
                 }}
                 columns={columns}
-                dataSource={languages}
+                dataSource={filteredLanguages}
                 bordered
             />
 
@@ -169,13 +207,13 @@ function LanguageManager() {
                 centered
             >
                 <Form onFinish={onFinish} layout="vertical">
-                    {/* <Form.Item
+                    <Form.Item
                         label="Mã ngôn ngữ"
-                        name="id"
+                        name="languageid"
                         rules={[{ required: true, message: 'Vui lòng nhập mã ngôn ngữ!' }]}
                     >
                         <Input placeholder="Nhập mã ngôn ngữ" allowClear />
-                    </Form.Item> */}
+                    </Form.Item>
                     <Form.Item
                         label="Ngôn ngữ"
                         name="language"

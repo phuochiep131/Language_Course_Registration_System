@@ -178,12 +178,15 @@ function UpdateTeacher() {
                     layout='vertical'
                     style={{ width: 400, margin: "0 auto" }}
                     initialValues={{
+                        teacherid: teacherData.teacherid,
                         name: teacherData.full_name,
-                        email: teacherData.email,
-                        // username: teacherData.username,
+                        email: teacherData.email,                        
                     }}
                     onFinish={onFinish}
-                >
+                >                    
+                    <Form.Item name="teacherid">
+                        <Input disabled />
+                    </Form.Item>
                     <Form.Item name="name"
                     label="Họ và tên"
                     rules={[{ required: true, message: "Vui lòng nhập họ và tên!" }]}>

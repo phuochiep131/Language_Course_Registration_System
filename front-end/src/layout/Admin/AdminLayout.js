@@ -27,6 +27,7 @@ import UpdateLanguageLevel from './LanguageLevelManager/UpdateLanguageLevel';
 import CourseManager from './CourseManager/CourseManager';
 import UpdateCourse from './CourseManager/UpdateCourse';
 import CourseRegistrationManager from './CourseRegistrationManager/CourseRegistrationManager';
+import UpdateCourseRegistration from './CourseRegistrationManager/UpdateCourseRegistration';
 //import TeacherManager from './TeacherManager/TeacherManager';
 // import ScheduleManager from './ScheduleManager/ScheduleManager';
 
@@ -62,8 +63,9 @@ const AdminLayout = () => {
         location.pathname.startsWith('/admin/courses') ? 'courses' :
         location.pathname.startsWith('/admin/teachers') ? 'teachers' :
         location.pathname.startsWith('/admin/schedules') ? 'schedules' :
-        location.pathname.startsWith('/admin/courses') ? 'courses' :
         location.pathname.startsWith('/admin/registercourses') ? 'registercourses' :
+        location.pathname.startsWith('/admin/languages') ? 'languages' :
+        location.pathname.startsWith('/admin/languageslevel') ? 'languageslevel' :
         'overview';
 
     const [collapsed, setCollapsed] = useState(false);
@@ -115,6 +117,7 @@ const AdminLayout = () => {
                             <Route path="courses" element={<CourseManager />} />
                             <Route path='courses/update/:id' element={<UpdateCourse/>}/>
                             <Route path="registercourses" element={<CourseRegistrationManager/>} />
+                            <Route path="registercourses/update-registration/:userId/:courseId" element={<UpdateCourseRegistration />} />
                             {/* <Route path="schedules" element={<ScheduleManager />} /> */}
                         </Routes>
                     </Layout>

@@ -60,6 +60,7 @@ function UpdateCourse() {
 
       form.setFieldsValue({      
         //_id: courseRes.data._id,  
+        courseid: courseRes.data.courseid,
         language_id: courseRes.data.language_id,
         languagelevel_id: courseRes.data.languagelevel_id,
         teacher_id: courseRes.data.teacher_id,
@@ -116,6 +117,9 @@ function UpdateCourse() {
         onFinish={onFinish}
         style={{ maxWidth: 600, minWidth:350, margin: "0 auto" }}
       >
+        <Form.Item label="Mã khóa học" name="courseid">
+            <Input disabled />
+          </Form.Item>
         <Form.Item
           name="language_id"
           label="Ngôn ngữ"

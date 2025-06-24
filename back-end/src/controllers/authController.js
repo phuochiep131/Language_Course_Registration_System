@@ -3,22 +3,36 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const config = require('../config/jwt');
 
+const randomid = async () => {    
+    let userid;
+    let isUnique = false;
+
+    while(!isUnique){
+        const randomNumber = Math.floor(Math.random() * 100000)
+        const formattedId = `8386${randomNumber.toString().padStart(6, '0')}`;
+
+        const existingId = await User.findOne({ userid: formattedId });
+        if (!existingId) {
+            userid = formattedId;
+            isUnique = true;
+        }
+    }
+    return userid
+}
+
 const register = async (req, res) => {
+    const { username, password, fullname, email, role, avatar } = req.body;
 
-    const { username, password, fullname, email, role, avatar} = req.body;
-
-    try {
-        // Kiểm tra xem người dùng đã tồn tại hay chưa
+    try {        
         const existingUser = await User.findOne({ username });
-
         if (existingUser) {
             return res.status(400).json({ message: 'Username is already taken' });
         }
 
-        // Nếu người dùng chưa tồn tại, thực hiện đăng ký
+        const userid = await randomid()
         const hashedPassword = await bcrypt.hash(password, 10);
-
         const newUser = new User({
+            userid,
             username,
             password: hashedPassword,
             email,
@@ -35,6 +49,7 @@ const register = async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 };
+
 
 const login = async (req, res) => {
     const { username, password } = req.body;

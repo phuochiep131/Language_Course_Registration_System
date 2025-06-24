@@ -43,6 +43,7 @@ import {
         form.setFieldsValue({
           id: res.data._id, 
           language: res.data.language,
+          languageid: res.data.languageid,
         });
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu ngôn ngữ:", error);
@@ -93,9 +94,9 @@ import {
           onFinish={onFinish}
           style={{ maxWidth: 400, margin: "0 auto" }}
         >
-          <Form.Item label="Mã ngôn ngữ (ID)" name="id">
+          <Form.Item label="Mã ngôn ngữ (ID)" name="languageid">
             <Input disabled />
-          </Form.Item>
+          </Form.Item>          
           <Form.Item
             label="Tên ngôn ngữ"
             name="language"

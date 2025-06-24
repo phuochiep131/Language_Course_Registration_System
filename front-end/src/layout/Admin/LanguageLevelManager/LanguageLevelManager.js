@@ -13,11 +13,12 @@ function LanguageManager() {
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
     const [messageApi, contextHolder] = message.useMessage();
+    const [filteredLanguages, setFilteredLanguageslevel] = useState([]);
 
     const columns = [
         {
             title: 'Mã trình độ',
-            dataIndex: '_id',
+            dataIndex: 'language_levelid',
             width: 200,
         },
         {
@@ -45,9 +46,11 @@ function LanguageManager() {
                     key: l._id,
                     _id: l._id,
                     language_level: l.language_level,
+                    language_levelid: l.language_levelid,
                 }));
 
                 setLanguages(data);
+                setFilteredLanguageslevel(data)
             })
             .catch(err => console.error('Fetch error:', err));
     };
@@ -90,6 +93,14 @@ function LanguageManager() {
             })
             .catch(error => console.log(error))
             .finally(() => setSpinning(false));
+    };    
+
+    const searchByName = (value) => {
+      const keyword = value?.toString().toLowerCase().trim();
+      const result = languages.filter(t =>
+          String(t.language_level || '').toLowerCase().includes(keyword)
+      );
+      setFilteredLanguageslevel(result);
     };
 
     useEffect(() => {
@@ -106,8 +117,14 @@ function LanguageManager() {
                     { title: 'Quản lý trình độ' },
                 ]}
             />
-            <Flex>
-                <Button type="primary" onClick={() => setOpen(true)}>Thêm trình độ</Button>
+            <Flex gap={20}>
+                <Button type="primary" onClick={() => setOpen(true)}>Thêm trình độ</Button>                        
+                <Input.Search
+                    placeholder="Tìm theo tên trình độ"
+                    allowClear                    
+                    onChange={(e) => searchByName(e.target.value.toString())}
+                    style={{ width: 250 }}
+                />
             </Flex>
 
             {selectedRowKeys.length > 0 &&
@@ -133,7 +150,7 @@ function LanguageManager() {
                     onChange: (newKeys) => setSelectedRowKeys(newKeys)
                 }}
                 columns={columns}
-                dataSource={languages}
+                dataSource={filteredLanguages}
                 bordered
             />
 
@@ -160,6 +177,13 @@ function LanguageManager() {
                 centered
             >
                 <Form onFinish={onFinish} layout="vertical">
+                    <Form.Item
+                        label="Mã trình độ"
+                        name="language_levelid"
+                        rules={[{ required: true, message: 'Vui lòng nhập mã trình độ!' }]}
+                    >
+                        <Input placeholder="Nhập mã trình độ" allowClear />
+                    </Form.Item>
                     <Form.Item
                         label="Trình độ"
                         name="language_level"

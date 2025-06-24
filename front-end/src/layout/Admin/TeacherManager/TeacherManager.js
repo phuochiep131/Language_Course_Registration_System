@@ -28,16 +28,18 @@ function TeacherManager() {
   const [spinning, setSpinning] = useState(false);
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
   const [fileList, setFileList] = useState([]);
+  const [filteredTeachers, setFilteredTeachers] = useState([]);
 
   const columns = [
     {
+      title: "Mã giảng viên",
+      dataIndex: "teacherid",      
+    },
+    {
       title: "Họ và tên",
       dataIndex: "full_name",
-      render: (record) => (
-        <Flex align="center" gap={10}>
-          <Image src={record.avatar} width={40} style={{ borderRadius: 30 }} />
-          <h4 style={{ fontWeight: 600 }}>{record.full_name}</h4>
-        </Flex>
+      render: (text) => (
+        <h4 style={{ fontWeight: 600 }}>{text}</h4>
       ),
     },
     {
@@ -123,7 +125,7 @@ function TeacherManager() {
     console.log(values);
 
     const createTeacher = (avatarUrl = null) => {
-      const newTeacher = {
+      const newTeacher = {        
         full_name: values.full_name,
         gender: values.gender,
         email: values.email,
@@ -217,7 +219,8 @@ function TeacherManager() {
       .then((response) => {
         const dataFormatted = response.data.map((t) => ({
           key: t._id,
-          full_name: { full_name: t.full_name, avatar: t.avatar },
+          teacherid: t.teacherid,
+          full_name: t.full_name,
           gender: t.gender,
           email: t.email,
           language_id: t.language_id?._id,
@@ -225,9 +228,34 @@ function TeacherManager() {
           update: t._id,
         }));
         setTeachers(dataFormatted);
+        setFilteredTeachers(dataFormatted);
       })
       .catch((error) => console.log(error));
   };
+
+  const handleSearch = (value) => {
+        const keyword = value?.toString().toLowerCase().trim();
+
+        if (!keyword) {
+            setFilteredTeachers(teachers);
+            return;
+        }
+
+        const filtered = teachers.filter(teachers =>
+            String(teachers.teacherid || '').toLowerCase().includes(keyword)
+        );
+
+        setFilteredTeachers(filtered);
+    };
+
+    const searchByName = (value) => {
+      const keyword = value?.toString().toLowerCase().trim();
+      const result = teachers.filter(t =>
+          String(t.full_name || '').toLowerCase().includes(keyword)
+      );
+      setFilteredTeachers(result);
+    };
+
 
   useEffect(() => {
     fetchLanguages();
@@ -250,11 +278,21 @@ function TeacherManager() {
       <Breadcrumb
         items={[{ title: "Admin Dashboard" }, { title: "Quản lý giảng viên" }]}
       />
-      <Flex>
-        <Button type="primary" onClick={showModal}>
-          Thêm giảng viên
-        </Button>
-      </Flex>
+    <Flex gap={20}>
+              <Button type="primary" onClick={showModal}>Thêm giảng viên</Button>
+              <Input.Search
+                  placeholder="Tìm theo mã giảng viên"
+                  allowClear                    
+                  onChange={(e) => handleSearch(e.target.value.toString())}
+                  style={{ width: 250 }}
+              />
+              <Input.Search
+                  placeholder="Tìm theo tên giảng viên"
+                  allowClear                    
+                  onChange={(e) => searchByName(e.target.value.toString())}
+                  style={{ width: 250 }}
+              />
+          </Flex>
       {selectedRowKeys.length > 0 && (
         <Flex
           align="center"
@@ -278,7 +316,7 @@ function TeacherManager() {
       <Table
         rowSelection={rowSelection}
         columns={columns}
-        dataSource={teachers}
+        dataSource={filteredTeachers}
         bordered
       />
       <Modal

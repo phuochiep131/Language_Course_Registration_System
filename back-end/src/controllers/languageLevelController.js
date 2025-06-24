@@ -10,10 +10,10 @@ const getAllLanguageslevel = async (req, res) => {
 };
 
 const addLanguagelevel = async (req, res) => {
-    const { language_level  } = req.body;
+    const { language_levelid, language_level  } = req.body;
     // console.log(language_level )
     try {
-        const newLanguageLevel = new Languagelevel({ language_level });
+        const newLanguageLevel = new Languagelevel({ language_levelid, language_level });
 
         await newLanguageLevel.save();
         res.status(201).json({ message: 'Language level added successfully' });

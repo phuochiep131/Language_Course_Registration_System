@@ -16,8 +16,14 @@ function UserManager() {
     const [spinning, setSpinning] = useState(false);
     const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
     const [fileList, setFileList] = useState([]);
+    const [filteredUsers, setFilteredUsers] = useState([]);
+
 
     const columns = [
+        {
+            title: 'Mã học viên',
+            dataIndex: 'userid',            
+        },
         {
             title: 'Họ và tên',
             dataIndex: 'name',
@@ -191,6 +197,7 @@ function UserManager() {
                 const dataFormatted = response.data.map(data => {
                     return ({
                         key: data._id,
+                        userid: data.userid,
                         name: { name: data.fullname, avatar: data.avatar },
                         email: data.email,
                         role: data.role,
@@ -199,9 +206,33 @@ function UserManager() {
                     })
                 })
                 setUsers(dataFormatted);
+                setFilteredUsers(dataFormatted);
             })
             .catch(error => { console.log(error); });
     }
+
+    const handleSearch = (value) => {
+        const keyword = value?.toString().trim();
+
+        if (!keyword) {
+            setFilteredUsers(users);
+            return;
+        }
+
+        const filtered = users.filter(user =>
+            String(user.userid || '').includes(keyword)
+        );
+
+        setFilteredUsers(filtered);
+    };
+
+    const searchByName = (value) => {
+        const keyword = value.trim().toLowerCase();
+        const result = users.filter(user =>
+            String(user.name?.name || '').toLowerCase().includes(keyword)
+        );
+        setFilteredUsers(result);
+    };
 
     useEffect(() => {
         fetchData();
@@ -216,9 +247,22 @@ function UserManager() {
                     { title: 'Quản lý người dùng' },
                 ]}
             />
-            <Flex>
+            <Flex gap={20}>
                 <Button type="primary" onClick={showModal}>Thêm người dùng</Button>
+                <Input.Search
+                    placeholder="Tìm theo mã học viên"
+                    allowClear                    
+                    onChange={(e) => handleSearch(e.target.value.toString())}
+                    style={{ width: 250 }}
+                />
+                <Input.Search
+                    placeholder="Tìm theo tên học viên"
+                    allowClear                    
+                    onChange={(e) => searchByName(e.target.value.toString())}
+                    style={{ width: 250 }}
+                />
             </Flex>
+
             {
                 selectedRowKeys.length !== 0 &&
                 <Flex align='center' justify='space-between'
@@ -236,7 +280,8 @@ function UserManager() {
                     <Button type='primary' danger onClick={showDeleteConfirm}>Xoá</Button>
                 </Flex>
             }
-            <Table rowSelection={rowSelection} columns={columns} dataSource={users} bordered={true} />
+            <Table rowSelection={rowSelection} columns={columns} dataSource={filteredUsers} bordered={true} />
+
             <Modal
                 open={openDeleteConfirm}
                 title="Xác nhận xoá"

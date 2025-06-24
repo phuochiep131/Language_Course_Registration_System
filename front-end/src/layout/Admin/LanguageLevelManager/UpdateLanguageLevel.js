@@ -43,6 +43,7 @@ import {
         form.setFieldsValue({
           id: res.data._id,
           language_level: res.data.language_level,
+          language_levelid: res.data.language_levelid,
         });
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu trình độ:", error);
@@ -93,7 +94,7 @@ import {
           onFinish={onFinish}
           style={{ maxWidth: 400, margin: "0 auto" }}
         >
-          <Form.Item label="Mã trình độ (ID)" name="id">
+          <Form.Item label="Mã trình độ (ID)" name="language_levelid">
             <Input disabled />
           </Form.Item>
           <Form.Item
