@@ -2,9 +2,13 @@ name: Test React Frontend
 
 on:
   push:
-    branches: [ main ]
+    branches: [front-end]
+    paths:
+      - 'front-end/**'
   pull_request:
-    branches: [ main ]
+    branches: [front-end]
+    paths:
+      - 'front-end/**'
 
 jobs:
   test:
