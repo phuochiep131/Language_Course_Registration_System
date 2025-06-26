@@ -21,7 +21,7 @@ function UserManager() {
 
     const columns = [
         {
-            title: 'Mã học viên',
+            title: 'ID',
             dataIndex: 'userid',            
         },
         {

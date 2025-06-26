@@ -217,7 +217,7 @@ function UpdateUser() {
                 >
                     <Form.Item
                         name="userid"
-                        label="Mã học viên"                        
+                        label="ID"                        
                     >
                         <Input disabled />
                     </Form.Item>

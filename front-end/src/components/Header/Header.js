@@ -112,15 +112,14 @@ function Header() {
         {currentUser && (
           <>
             <Link
-  className={`Header_nav_item ${
-    isActive(`/my-courses/${currentUser?._id}`) ? "active" : ""
-  }`}
-  to={`/my-courses/${currentUser?._id}`}
->
-  <ion-icon name="school"></ion-icon>
-  <span>Khóa học của tôi</span>
-</Link>
-
+              className={`Header_nav_item ${
+                isActive(`/my-courses/${currentUser?._id}`) ? "active" : ""
+              }`}
+              to={`/my-courses/${currentUser?._id}`}
+            >
+              <ion-icon name="school"></ion-icon>
+              <span>Khóa học của tôi</span>
+            </Link>
           </>
         )}
       </div>
@@ -143,8 +142,10 @@ function Header() {
                 <div className="avatar_popup_name">
                   <img src={currentUser.avatar} alt="" />
                   <div>
-                    <div>{currentUser.fullname}</div>   
-                    Mã học viên: {currentUser.userid}
+                    <div>{currentUser.fullname}</div>
+                    {currentUser.role === "Student" && (
+                      <div>Mã học viên: {currentUser.userid}</div>
+                    )}
                     <span
                       className={
                         currentUser.role === "Admin" ? "badge-admin" : ""
