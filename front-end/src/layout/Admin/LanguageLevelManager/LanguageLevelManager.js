@@ -7,7 +7,7 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 
 function LanguageManager() {
-    const [languages, setLanguages] = useState([]);
+    const [languagelvs, setLanguagelvs] = useState([]);
     const [open, setOpen] = useState(false);
     const [spinning, setSpinning] = useState(false);
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -49,15 +49,15 @@ function LanguageManager() {
                     language_levelid: l.language_levelid,
                 }));
 
-                setLanguages(data);
+                setLanguagelvs(data);
                 setFilteredLanguageslevel(data)
             })
             .catch(err => console.error('Fetch error:', err));
     };
 
-    const onFinish = (values) => {
-        const alreadyExists = languages.some(lang =>
-            lang.language_level.trim().toLowerCase() === values.language_level.trim().toLowerCase()
+    const onFinish = async (values) => {
+        const alreadyExists = languagelvs.some(lang =>
+            lang.language_levelid.trim().toLowerCase() === values.language_levelid.trim().toLowerCase()
         );
 
         if (alreadyExists) {
@@ -70,13 +70,19 @@ function LanguageManager() {
         }
 
         setSpinning(true);
-        setOpen(false);
-        axios.post(`http://localhost:3005/api/languagelevel/add`, values, {
+        try {
+            await axios.post(`http://localhost:3005/api/languagelevel/add`, values, {
             withCredentials: true
         })
-            .then(() => fetchData())
-            .catch(error => console.error('Add error:', error))
-            .finally(() => setSpinning(false));
+            messageApi.success("Thêm trình độ mới thành công");
+            setOpen(false)
+            fetchData();
+        } catch (error) {
+            const errorMsg = error.response?.data?.message || error.message                    
+            messageApi.error(errorMsg);
+        } finally {
+            setSpinning(false);
+        }
     };
 
     const handleDelete = () => {
@@ -87,17 +93,25 @@ function LanguageManager() {
             data: { languagelevelIds: selectedRowKeys },
             withCredentials: true
         })
-            .then(() => {
-                fetchData();
+            .then(() => {                
+                messageApi.success("Xóa trình độ thành công");
                 setSelectedRowKeys([]);
+                fetchData();
             })
-            .catch(error => console.log(error))
+            .catch(error => {
+                if (error.response && error.response.status === 400) {
+                    const msg = 'Không thể xóa. Có khóa học đang sử dụng trình độ này.'
+                    messageApi.error(msg);
+                } else {
+                    messageApi.error('Có lỗi xảy ra khi xoá trình độ!');
+                }
+            })
             .finally(() => setSpinning(false));
     };    
 
     const searchByName = (value) => {
       const keyword = value?.toString().toLowerCase().trim();
-      const result = languages.filter(t =>
+      const result = languagelvs.filter(t =>
           String(t.language_level || '').toLowerCase().includes(keyword)
       );
       setFilteredLanguageslevel(result);

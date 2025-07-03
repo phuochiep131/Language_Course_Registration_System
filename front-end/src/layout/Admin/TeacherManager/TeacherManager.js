@@ -8,16 +8,12 @@ import {
   Modal,
   Form,
   Input,
-  Upload,
   Spin,
   Select,
-  Image,
+  message
 } from "antd";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import imageCompression from "browser-image-compression";
-import { storage } from "../../../firebase";
-import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { SmileOutlined, MailOutlined } from "@ant-design/icons";
 
 function TeacherManager() {
@@ -26,9 +22,10 @@ function TeacherManager() {
   const [teachers, setTeachers] = useState([]);
   const [languages, setLanguages] = useState([]);
   const [spinning, setSpinning] = useState(false);
-  const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
-  const [fileList, setFileList] = useState([]);
+  const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);  
   const [filteredTeachers, setFilteredTeachers] = useState([]);
+  const [messageApi, contextHolder] = message.useMessage(); 
+
 
   const columns = [
     {
@@ -76,10 +73,6 @@ function TeacherManager() {
       })),
       onFilter: (value, record) => record.language_id === value,
     },
-    // {
-    //     title: 'Ngôn ngữ',
-    //     dataIndex: 'language_name', // sẽ map thủ công khi fetch
-    // },
     {
       title: "Sửa",
       dataIndex: "update",
@@ -87,24 +80,7 @@ function TeacherManager() {
       width: 60,
       align: "center",
     },
-  ];
-
-  const onChange = ({ fileList: newFileList }) => setFileList(newFileList);
-
-  const onPreview = async (file) => {
-    let src = file.url;
-    if (!src) {
-      src = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file.originFileObj);
-        reader.onload = () => resolve(reader.result);
-      });
-    }
-    const image = new Image();
-    image.src = src;
-    const imgWindow = window.open(src);
-    imgWindow?.document.write(image.outerHTML);
-  };
+  ];  
 
   const onSelectChange = (newSelectedRowKeys) =>
     setSelectedRowKeys(newSelectedRowKeys);
@@ -120,68 +96,29 @@ function TeacherManager() {
 
   const onFinish = async (values) => {
     setSpinning(true);
-    setOpen(false);
-
-    console.log(values);
-
-    const createTeacher = (avatarUrl = null) => {
-      const newTeacher = {        
-        full_name: values.full_name,
-        gender: values.gender,
-        email: values.email,
-        language_id: values.language,
-        ...(avatarUrl && { avatar: avatarUrl }),
-      };
-
-      axios
-        .post(`http://localhost:3005/api/teacher`, newTeacher, {
-          withCredentials: true,
-        })
-
-        .then(() => {
-          fetchData();
-          setFileList([]);
-        })
-        .catch((error) => console.error("Error creating teacher:", error))
-        .finally(() => setSpinning(false));
+    const newTeacher = {
+      full_name: values.full_name,
+      gender: values.gender,
+      email: values.email,
+      language_id: values.language,
     };
 
-    if (fileList && fileList.length > 0) {
-      const file = fileList[0].originFileObj;
-      const maxImageSize = 1024;
+    try {
+      await axios.post(`http://localhost:3005/api/teacher`, newTeacher, {
+        withCredentials: true,
+      });
 
-      try {
-        let compressedFile = file;
-        if (file.size > maxImageSize) {
-          compressedFile = await imageCompression(file, {
-            maxSizeMB: 0.8,
-            maxWidthOrHeight: maxImageSize,
-            useWebWorker: true,
-          });
-        }
-
-        const storageRef = ref(storage, `teachers/${compressedFile.name}`);
-        const uploadTask = uploadBytesResumable(storageRef, compressedFile);
-
-        uploadTask.on(
-          "state_changed",
-          () => {},
-          (error) => {
-            console.log(error);
-          },
-          () => {
-            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-              createTeacher(downloadURL);
-            });
-          }
-        );
-      } catch (error) {
-        console.error("Image Compression Error:", error);
-      }
-    } else {
-      createTeacher();
+      messageApi.success("Tạo giảng viên thành công");
+      setOpen(false);
+      fetchData();
+    } catch (error) {
+      const errorMsg = error.response?.data?.message || error.message
+      messageApi.error(errorMsg);
+    } finally {
+      setSpinning(false);
     }
   };
+
 
   const handleDelete = () => {
     setSpinning(true);
@@ -194,9 +131,17 @@ function TeacherManager() {
       })
       .then(() => {
         fetchData();
+        messageApi.success("Xóa giảng viên thành công");
         setSelectedRowKeys([]);
       })
-      .catch((error) => console.log(error))
+      .catch(error => {
+          if (error.response && error.response.status === 400) {
+              const msg = 'Không thể xóa. Giảng viên này đang dạy khóa học trong hệ thống.'
+              messageApi.error(msg);
+          } else {
+              messageApi.error('Có lỗi xảy ra khi xoá giảng viên!');
+          }
+      })
       .finally(() => setSpinning(false));
   };
 
@@ -268,6 +213,8 @@ function TeacherManager() {
   }, [languages]);
 
   return (
+    <>
+    {contextHolder}    
     <Flex
       className="TeacherManager"
       vertical
@@ -387,18 +334,7 @@ function TeacherManager() {
                 </Select.Option>
               ))}
             </Select>
-          </Form.Item>
-          <Form.Item name="avatar">
-            <Upload
-              listType="picture-card"
-              fileList={fileList}
-              onChange={onChange}
-              onPreview={onPreview}
-              maxCount={1}
-            >
-              Upload
-            </Upload>
-          </Form.Item>
+          </Form.Item>          
           <Form.Item>
             <Button type="primary" htmlType="submit" style={{ width: "100%" }}>
               Tạo giảng viên
@@ -407,6 +343,7 @@ function TeacherManager() {
         </Form>
       </Modal>
     </Flex>
+    </>
   );
 }
 

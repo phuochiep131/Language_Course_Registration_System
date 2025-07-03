@@ -26,10 +26,10 @@ import {
       });
     };
   
-    const errorMessage = () => {
+    const errorMessage = (msg) => {
       messageApi.open({
         type: "error",
-        content: "Cập nhật thất bại, ngôn ngữ này đã tồn tại!!",
+        content: "Cập nhật thất bại, "+ msg,
       });
     };
   
@@ -66,8 +66,8 @@ import {
           navigate("/admin/languages");
         }, 1000);
       } catch (error) {
-        console.error("Cập nhật thất bại:", error);
-        errorMessage();
+        const errorMsg = error.response?.data?.message || error.message                    
+            errorMessage(errorMsg);
       } finally {
         setSpinning(false);
       }

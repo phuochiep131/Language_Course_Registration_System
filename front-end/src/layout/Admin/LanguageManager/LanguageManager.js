@@ -13,6 +13,23 @@ function LanguageManager() {
     const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
     const [messageApi, contextHolder] = message.useMessage();
     const [filteredLanguages, setFilteredLanguages] = useState([]);
+    
+
+    const successMessage = () => {
+        messageApi.open({
+            key: 'login',
+            type: 'success',
+            content: 'Thêm thành công',
+        });
+    };    
+
+    const errorMessage = (msg) => {
+        messageApi.open({
+            key: 'login',
+            type: 'error',
+            content: `Thêm thất bại, ${msg}`,
+        });
+    };
 
     const columns = [
         {
@@ -54,9 +71,9 @@ function LanguageManager() {
             .catch(err => console.error('Fetch error:', err));
     };
 
-    const onFinish = (values) => {
+    const onFinish = async (values) => {
         const alreadyExists = languages.some(lang =>
-            lang.language.trim().toLowerCase() === values.language.trim().toLowerCase()
+            lang.languageid.trim().toLowerCase() === values.languageid.trim().toLowerCase()
         );
 
         if (alreadyExists) {
@@ -69,13 +86,20 @@ function LanguageManager() {
         }
 
         setSpinning(true);
-        setOpen(false);
-        axios.post(`http://localhost:3005/api/language/add`, values, {
+        
+        try {
+            await axios.post(`http://localhost:3005/api/language/add`, values, {
             withCredentials: true
         })
-            .then(() => fetchData())
-            .catch(error => console.error('Add error:', error))
-            .finally(() => setSpinning(false));
+            successMessage()
+            setOpen(false)
+            fetchData();
+        } catch (error) {
+            const errorMsg = error.response?.data?.message || error.message                    
+            errorMessage(errorMsg);
+        } finally {
+            setSpinning(false);
+        }
     };
 
     const handleDelete = () => {
@@ -87,7 +111,7 @@ function LanguageManager() {
             withCredentials: true
         })
             .then(() => {
-                fetchData();
+                fetchData();                
                 setSelectedRowKeys([]);
                 messageApi.success('Xóa ngôn ngữ thành công!');
             })

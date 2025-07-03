@@ -24,30 +24,14 @@ function UpdateCourse() {
   const [languageLevels, setLanguageLevels] = useState([]);
   const [teachers, setTeachers] = useState([]);
 
-  const successMessage = () => {
-    messageApi.open({
-      type: "success",
-      content: "Cập nhật khóa học thành công",
-    });
-  };
-
-  const errorMessage = () => {
-    messageApi.open({
-      type: "error",
-      content: "Cập nhật thất bại!",
-    });
-  };
+  const [selectedLanguageId, setSelectedLanguageId] = useState(null);
 
   const fetchData = async () => {
     setSpinning(true);
     try {
-      console.log(id)
-      // Load dữ liệu khóa học cụ thể
       const courseRes = await axios.get(`http://localhost:3005/api/course/${id}`, {
         withCredentials: true,
       });
-
-      // Load danh sách liên quan
       const [langRes, levelRes, teacherRes] = await Promise.all([
         axios.get("http://localhost:3005/api/language", { withCredentials: true }),
         axios.get("http://localhost:3005/api/languagelevel", { withCredentials: true }),
@@ -62,16 +46,15 @@ function UpdateCourse() {
         //_id: courseRes.data._id,  
         courseid: courseRes.data.courseid,
         language_id: courseRes.data.language_id,
-        languagelevel_id: courseRes.data.languagelevel_id,
-        teacher_id: courseRes.data.teacher_id,
+        languagelevel_id: courseRes.data.languagelevel_id,        
         Start_Date: courseRes.data.Start_Date?.slice(0, 10),
         Number_of_periods: courseRes.data.Number_of_periods,
         Tuition: courseRes.data.Tuition,
         Description: courseRes.data.Description,
       });
+      setSelectedLanguageId(courseRes.data.language_id)
     } catch (error) {
       console.error("Lỗi khi lấy dữ liệu khóa học:", error);
-      errorMessage();
     } finally {
       setSpinning(false);
     }
@@ -83,13 +66,13 @@ function UpdateCourse() {
       await axios.put(`http://localhost:3005/api/course/${id}`, values, {
         withCredentials: true,
       });
-      successMessage();
+      messageApi.success("Sửa khóa học thành công");
       setTimeout(() => {
         navigate("/admin/courses");
       }, 1000);
     } catch (error) {
-      console.error("Lỗi cập nhật khóa học:", error);
-      errorMessage();
+      const errorMsg = error.response?.data?.message || error.message
+        messageApi.error(errorMsg);
     } finally {
       setSpinning(false);
     }
@@ -119,7 +102,7 @@ function UpdateCourse() {
       >
         <Form.Item label="Mã khóa học" name="courseid">
             <Input disabled />
-          </Form.Item>
+          </Form.Item>    
         <Form.Item
           name="language_id"
           label="Ngôn ngữ"
@@ -148,18 +131,16 @@ function UpdateCourse() {
           </Select>
         </Form.Item>
 
-        <Form.Item
-          name="teacher_id"
-          label="Giảng viên"
-          rules={[{ required: true, message: "Vui lòng chọn giảng viên!" }]}
-        >
-          <Select placeholder="Chọn giảng viên">
-            {teachers.map((t) => (
-              <Select.Option key={t._id} value={t._id}>
-                {t.full_name}
-              </Select.Option>
-            ))}
-          </Select>
+        <Form.Item name="teacher_id" label="Giảng viên" rules={[{ required: true, message: 'Vui lòng chọn giảng viên!' }]}>
+            <Select placeholder="Chọn giảng viên">
+                {teachers
+                    .filter(teacher => teacher.language_id._id === selectedLanguageId)
+                    .map(teacher => (
+                        <Select.Option key={teacher._id} value={teacher._id}>
+                            {teacher.full_name}                                        
+                        </Select.Option>                                    
+                    ))}
+            </Select>                        
         </Form.Item>
 
         <Form.Item

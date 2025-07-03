@@ -1,11 +1,8 @@
 // import ImgCrop from 'antd-img-crop';
 import { useEffect, useState } from 'react';
-import { Button, Table, Flex, Breadcrumb, Badge, /*Avatar,*/ Modal, Form, Input, Upload, Spin, Select, Image } from 'antd';
+import { Button, Table, Flex, Breadcrumb, Badge,  Modal, Form, Input, Spin, Select, Image, message } from 'antd';
 import axios from 'axios';
 import { /*FireOutlined,*/ LockOutlined, MailOutlined, SmileOutlined, UserOutlined } from '@ant-design/icons';
-import imageCompression from 'browser-image-compression';
-import { storage } from '../../../firebase';
-import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { Link } from 'react-router-dom';
 
 function UserManager() {
@@ -15,8 +12,33 @@ function UserManager() {
     const [users, setUsers] = useState([]);
     const [spinning, setSpinning] = useState(false);
     const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
-    const [fileList, setFileList] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
+
+    const [messageApi, contextHolder] = message.useMessage();
+
+    const successMessage = () => {
+        messageApi.open({
+            key: 'login',
+            type: 'success',
+            content: 'Thêm thành công',
+        });
+    };
+
+    const successMessageDelete = () => {
+        messageApi.open({
+            key: 'login',
+            type: 'success',
+            content: 'Xóa thành công',
+        });
+    };
+
+    const errorMessage = (msg) => {
+        messageApi.open({
+            key: 'login',
+            type: 'error',
+            content: `Thêm thất bại, ${msg}`,
+        });
+    };
 
 
     const columns = [
@@ -34,12 +56,32 @@ function UserManager() {
                 </Flex>
         },
         {
+            title: "Giới tính",
+            dataIndex: "gender",
+            render: (gender) => (
+                <Badge
+                color={gender === "Nam" ? "#1890ff" : "#f759ab"}
+                count={gender}
+                />
+            ),
+            filters: [
+                { text: "Nam", value: "Nam" },
+                { text: "Nữ", value: "Nữ" },
+            ],
+            onFilter: (value, record) => record.gender === value,
+            width: 150,
+        },
+        {
             title: 'Username',
             dataIndex: 'username',
         },
         {
             title: 'Email',
             dataIndex: 'email',
+        },
+        {
+            title: 'Địa chỉ',
+            dataIndex: 'address',
         },
         {
             title: 'Tài khoản',
@@ -62,29 +104,10 @@ function UserManager() {
             width: 60,
             align: "center"
         }
-    ];
-
-    const onChange = ({ fileList: newFileList }) => {
-        setFileList(newFileList);
-    };
-
-    const onPreview = async (file) => {
-        let src = file.url;
-        if (!src) {
-            src = await new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file.originFileObj);
-                reader.onload = () => resolve(reader.result);
-            });
-        }
-        const image = new Image();
-        image.src = src;
-        const imgWindow = window.open(src);
-        imgWindow?.document.write(image.outerHTML);
-    };
+    ];    
 
     const onSelectChange = (newSelectedRowKeys) => {
-        console.log('selectedRowKeys changed: ', newSelectedRowKeys);
+        //console.log('selectedRowKeys changed: ', newSelectedRowKeys);
         setSelectedRowKeys(newSelectedRowKeys);
     };
 
@@ -102,74 +125,40 @@ function UserManager() {
     };
 
     const onFinish = async (values) => {
-        setSpinning(true);
-        setOpen(false);
+        setSpinning(true);            
+        try {
+            const defaultAvatar = "https://cdn-icons-png.flaticon.com/512/8792/8792047.png";
 
-        if (fileList[0]) {
-            const file = fileList[0].originFileObj;
-            const maxImageSize = 1024;
+            const newUser = {
+                username: values.username,
+                password: values.password,
+                email: values.email,
+                fullname: values.name,
+                gender: values.gender,
+                address: values.address,
+                role: values.role,
+                avatar: defaultAvatar,
+            };
 
-            try {
-                let compressedFile = file;
 
-                if (file.size > maxImageSize) {
-                    compressedFile = await imageCompression(file, {
-                        maxSizeMB: 0.8,
-                        maxWidthOrHeight: maxImageSize,
-                        useWebWorker: true,
-                    });
-                }
+            await axios.post(`http://localhost:3005/api/auth/register`, newUser, {
+            withCredentials: true,
+            });
+            successMessage()
+            setOpen(false)
+            fetchData();
+        } catch (error) {
+            const errorMsg =
+                    error.response?.data?.message ||
+                    error.message ||
+                    'Cập nhật thất bại, vui lòng thử lại sau.';
 
-                const storageRef = ref(storage, `dream/${compressedFile.name}`);
-                const uploadTask = uploadBytesResumable(storageRef, compressedFile);
-
-                uploadTask.on("state_changed",
-                    (snapshot) => {},
-                    (error) => { console.log(error); },
-                    () => {
-                        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                            const newUser = {
-                                "username": values.username,
-                                "password": values.password,
-                                "email": values.email,
-                                "fullname": values.name,
-                                "role": values.role,
-                                "avatar": downloadURL
-                            }
-
-                            axios.post(`http://localhost:3005/api/auth/register`, newUser, {
-                                withCredentials: true
-                            })
-                                .then(response => { fetchData(); })
-                                .catch(error => { console.error('Error fetching data:', error); });
-
-                            setSpinning(false);
-                        });
-                    }
-                );
-            } catch (error) {
-                console.error('Image Compression Error:', error);
-            }
-        } else {
-            try {
-                const newUser = {
-                    "username": values.username,
-                    "password": values.password,
-                    "email": values.email,
-                    "fullname": values.name,
-                    "role": values.role
-                }
-
-                axios.post(`http://localhost:3005/api/auth/register`, newUser, {
-                    withCredentials: true
-                })
-                    .then(response => { fetchData(); })
-                    .catch(error => { console.error('Error fetching data:', error); });
-
-                setSpinning(false);
-            } catch (error) {}
+                errorMessage(errorMsg);
+        } finally {
+            setSpinning(false);
         }
-    };
+        };
+
 
     const handleDelete = () => {
         setSpinning(true);
@@ -183,10 +172,13 @@ function UserManager() {
         })
             .then(response => {
                 fetchData();
+                successMessageDelete()
                 setSpinning(false);
                 setSelectedRowKeys([]);
             })
-            .catch(error => { console.log(error); });
+            .catch(error => { 
+                //console.log(error); 
+            });
     }
 
     const fetchData = () => {
@@ -200,6 +192,8 @@ function UserManager() {
                         userid: data.userid,
                         name: { name: data.fullname, avatar: data.avatar },
                         email: data.email,
+                        gender: data.gender,
+                        address: data.address,
                         role: data.role,
                         username: data.username,
                         update: data._id
@@ -208,7 +202,9 @@ function UserManager() {
                 setUsers(dataFormatted);
                 setFilteredUsers(dataFormatted);
             })
-            .catch(error => { console.log(error); });
+            .catch(error => { 
+                // console.log(error); 
+            });
     }
 
     const handleSearch = (value) => {
@@ -240,6 +236,7 @@ function UserManager() {
 
     return (
         <Flex className="UserManager" vertical={true} gap={20} style={{ position: "relative" }}>
+            {contextHolder}
             <Spin spinning={spinning} fullscreen />
             <Breadcrumb
                 items={[
@@ -316,31 +313,28 @@ function UserManager() {
                     <Form.Item name="email" rules={[{ required: true, message: 'Vui lòng nhập email!' }]}>
                         <Input prefix={<MailOutlined className="site-form-item-icon" />} placeholder="Email" allowClear />
                     </Form.Item>
+                    <Form.Item name="gender" rules={[{ required: true, message: 'Vui lòng chọn giới tính!' }]}>
+                        <Select placeholder="Giới tính">
+                            <Select.Option value="Nam">Nam</Select.Option>
+                            <Select.Option value="Nữ">Nữ</Select.Option>                            
+                        </Select>
+                    </Form.Item>
+
                     <Form.Item name="username" rules={[{ required: true, message: 'Vui lòng nhập tên đăng nhập!' }]}>
                         <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Tên đăng nhập" allowClear />
                     </Form.Item>
                     <Form.Item name="password" rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}>
                         <Input.Password prefix={<LockOutlined className="site-form-item-icon" />} type="password" placeholder="Mật khẩu" allowClear />
                     </Form.Item>
+                    <Form.Item name="address" rules={[{ required: true, message: 'Vui lòng nhập địa chỉ!' }]}>
+                        <Input prefix={<SmileOutlined className="site-form-item-icon" />} placeholder="Địa chỉ" allowClear />
+                    </Form.Item>
                     <Form.Item name="role" rules={[{ required: true, message: 'Vui lòng chọn quyền!' }]}>
                         <Select placeholder="Loại tài khoản" /*prefix={<FireOutlined className="site-form-item-icon" />}*/>
                             <Select.Option value="Student">Student</Select.Option>
                             <Select.Option value="Admin">Admin</Select.Option>
                         </Select>
-                    </Form.Item>
-                    <Form.Item name="avatar">
-                        {/* <ImgCrop showGrid> */}
-                            <Upload
-                                listType="picture-card"
-                                fileList={fileList}
-                                onChange={onChange}
-                                onPreview={onPreview}
-                                maxCount={1}
-                            >
-                                Upload
-                            </Upload>
-                        {/* </ImgCrop> */}
-                    </Form.Item>
+                    </Form.Item>                    
                     <Form.Item style={{ paddingTop: 20 }}>
                         <Button type="primary" htmlType="submit" className="login-form-button" size="medium" style={{ width: "100%" }}>
                             Tạo người dùng

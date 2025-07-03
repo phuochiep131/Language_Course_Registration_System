@@ -79,7 +79,7 @@ function Home() {
                   KHÓA HỌC {course.language?.language?.toUpperCase() || "CHƯA RÕ"}
                 </div>
                 <div className="level">
-                  TRÌNH ĐỘ {course.level?.language_level?.toUpperCase() || "CHƯA RÕ"}
+                  {course.level?.language_level?.toUpperCase() || "CHƯA RÕ"}
                 </div>
               </div>
 
