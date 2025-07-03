@@ -19,13 +19,6 @@ function UpdateCourseRegistration() {
         });
     };
 
-    const errorMessage = () => {
-        messageApi.open({
-            type: "error",
-            content: "Cập nhật thất bại!",
-        });
-    };
-
     const fetchData = async () => {
         setSpinning(true);
         try {
@@ -62,8 +55,8 @@ function UpdateCourseRegistration() {
                 navigate("/admin/registercourses");
             }, 1000);
         } catch (error) {
-            console.error("Lỗi cập nhật:", error.response?.data?.message || error.message);
-            errorMessage();
+            const errorMsg = error.response?.data?.message || error.message
+            messageApi.error(errorMsg);
         } finally {
             setSpinning(false);
         }

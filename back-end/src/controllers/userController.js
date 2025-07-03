@@ -1,17 +1,9 @@
-const User = require("../models/user");
-
-const bcrypt = require("bcrypt");
+const userService = require("../services/userService");
 
 const getAllUsers = async (req, res) => {
   try {
-    // Kiểm tra xem req.user đã được đặt từ middleware xác thực hay chưa
-    if (!req.user) {
-      return res.status(401).json({ message: "Unauthorized - Invalid token" });
-    }
-
-    // Chỉ lấy danh sách người dùng nếu người dùng có quyền
-    const users = await User.find();
-
+    if (!req.user) return res.status(401).json({ message: "Unauthorized" });
+    const users = await userService.getAllUsers();
     res.json(users);
   } catch (error) {
     console.error(error);
@@ -21,27 +13,12 @@ const getAllUsers = async (req, res) => {
 
 const getUserById = async (req, res) => {
   try {
-    // Kiểm tra xem req.user đã được đặt từ middleware xác thực hay chưa
-    if (!req.user) {
-      return res.status(401).json({ message: "Unauthorized - Invalid token" });
-    }
-
-    // Lấy id người dùng từ đường dẫn
-    const userId = req.params.id;
-
-    // Kiểm tra xem id có đúng định dạng MongoDB hay không
-    if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
+    if (!req.user) return res.status(401).json({ message: "Unauthorized" });
+    const { id } = req.params;
+    if (!id.match(/^[0-9a-fA-F]{24}$/))
       return res.status(400).json({ message: "Invalid user ID format" });
-    }
-
-    // Kiểm tra xem người dùng có tồn tại hay không
-    const user = await User.findById(userId);
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    // Trả về thông tin người dùng
+    const user = await userService.getUserById(id);
+    if (!user) return res.status(404).json({ message: "User not found" });
     res.json(user);
   } catch (error) {
     console.error(error);
@@ -51,18 +28,9 @@ const getUserById = async (req, res) => {
 
 const getCurrentUser = async (req, res) => {
   try {
-    // Lấy id người dùng từ đối tượng req
-    const userId = req.user.id;
-
-    // Truy vấn cơ sở dữ liệu để lấy thông tin chi tiết của người dùng hiện tại
-    const currentUser = await User.findById(userId);
-
-    if (!currentUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    // Trả về thông tin người dùng
-    res.json(currentUser);
+    const user = await userService.getCurrentUser(req.user.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json(user);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal Server Error" });
@@ -71,33 +39,16 @@ const getCurrentUser = async (req, res) => {
 
 const deleteUsersByIds = async (req, res) => {
   try {
-    // Kiểm tra xem req.user đã được đặt từ middleware xác thực hay chưa
-    if (!req.user) {
-      return res.status(401).json({ message: "Unauthorized - Invalid token" });
-    }
-
-    // Lấy danh sách id người dùng từ request body
+    if (!req.user) return res.status(401).json({ message: "Unauthorized" });
     const { userIds } = req.body;
-
-    // Kiểm tra xem userIds có đúng định dạng hay không
     if (
       !Array.isArray(userIds) ||
       userIds.some((id) => !id.match(/^[0-9a-fA-F]{24}$/))
-    ) {
+    )
       return res.status(400).json({ message: "Invalid user IDs format" });
-    }
-
-    // Kiểm tra xem các người dùng có tồn tại hay không
-    const users = await User.find({ _id: { $in: userIds } });
-
-    if (users.length !== userIds.length) {
+    const result = await userService.deleteUsersByIds(userIds);
+    if (!result)
       return res.status(404).json({ message: "One or more users not found" });
-    }
-
-    // Xoá các người dùng khỏi cơ sở dữ liệu
-    await User.deleteMany({ _id: { $in: userIds } });
-
-    // Trả về thông báo thành công
     res.json({ message: "Users deleted successfully" });
   } catch (error) {
     console.error(error);
@@ -107,66 +58,41 @@ const deleteUsersByIds = async (req, res) => {
 
 const updateUserById = async (req, res) => {
   try {
-    // Kiểm tra xem req.user đã được đặt từ middleware xác thực hay chưa
-    if (!req.user) {
-      return res.status(401).json({ message: "Unauthorized - Invalid token" });
-    }
+    if (!req.user) 
+      return res.status(401).json({ message: "Unauthorized" });
 
-    const userId = req.params.id;
-
-    if (!userId.match(/^[0-9a-fA-F]{24}$/)) {
+    const { id } = req.params; 
+    if (!id.match(/^[0-9a-fA-F]{24}$/))
       return res.status(400).json({ message: "Invalid user ID format" });
+
+    const { fullname } = req.body;
+    if (fullname && /[^a-zA-ZÀ-ỹ\s]/.test(fullname)) {
+      return res.status(400).json({ message: "Họ tên không hợp lệ" });
     }
 
-    const user = await User.findById(userId);
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    const { address } = req.body;    
+    if (address && /[^a-zA-ZÀ-ỹ,/0-9\s]/.test(address)) {
+      return res.status(400).json({ message: "Địa chỉ không hợp lệ" });
     }
 
-    if (req.body.fullname) {
-      user.fullname = req.body.fullname;
-    }
+    const user = await userService.updateUserById(id, req.body);
+    if (!user) return res.status(404).json({ message: "Không tìm thấy user này" });
 
-    if (req.body.email) {
-      user.email = req.body.email;
-    }
-
-    if (req.body.username) {
-      user.username = req.body.username;
-    }
-
-    if (req.body.password) {
-      user.password = await bcrypt.hash(req.body.password, 10);
-    }
-
-    if (req.body.role) {
-      user.role = req.body.role;
-    }
-
-    if (req.body.avatar) {
-      user.avatar = req.body.avatar;
-    }
-    await user.save();
     res.json(user);
   } catch (error) {
-    console.error(error);
+
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
+
 const addRegistrationCourse = async (req, res) => {
   try {
-    const userId = req.params.id;
-    const { course_id } = req.body;
-    console.log(course_id);
-
-    const user = await User.findById(userId);
+    const user = await userService.addRegistrationCourse(
+      req.params.id,
+      req.body.course_id
+    );
     if (!user) return res.status(404).json({ message: "User not found" });
-
-    user.registrationCourses.push({ course_id });
-    await user.save();
-
     res.json({ message: "Registration added successfully", user });
   } catch (err) {
     console.error(err);
@@ -176,24 +102,12 @@ const addRegistrationCourse = async (req, res) => {
 
 const getRegisteredCourses = async (req, res) => {
   try {
-    const userId = req.params.id;
-
-    const user = await User.findById(userId).populate({
-      path: "registrationCourses.course_id",
-      populate: [
-        { path: "language_id" },
-        { path: "languagelevel_id" },
-        { path: "teacher_id" },
-      ],
-    });
-
+    const user = await userService.getRegisteredCourses(req.params.id);
     if (!user) return res.status(404).json({ message: "User not found" });
-
     const registeredCourses = user.registrationCourses.map((rc) => ({
       course: rc.course_id,
       enrollment_date: rc.enrollment_date,
     }));
-
     res.json(registeredCourses);
   } catch (err) {
     console.error(err);
@@ -202,43 +116,26 @@ const getRegisteredCourses = async (req, res) => {
 };
 
 const unregisterCourse = async (req, res) => {
-  const { id, courseId } = req.params;
   try {
-    const user = await User.findById(id);
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    const before = user.registrationCourses.length;
-    user.registrationCourses = user.registrationCourses.filter(
-      (rc) => rc.course_id.toString() !== courseId
+    const result = await userService.unregisterCourse(
+      req.params.id,
+      req.params.courseId
     );
-
-    if (user.registrationCourses.length === before) {
+    if (result === null)
+      return res.status(404).json({ message: "User not found" });
+    if (!result)
       return res
         .status(400)
         .json({ message: "Course not found in registration" });
-    }
-
-    await user.save();
     res.json({ message: "Unregistered successfully" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-const getAllRegisteredCourses = async (req, res) => {  
+const getAllRegisteredCourses = async (req, res) => {
   try {
-    const users = await User.find({
-      role: 'Student',
-      registrationCourses: { $exists: true, $ne: [] }
-    }).populate({
-      path: "registrationCourses.course_id",
-      populate: [
-        { path: "language_id" },
-        { path: "languagelevel_id" },
-        { path: "teacher_id" },
-      ],
-    });
-
+    const users = await userService.getAllRegisteredCourses();
     const allRegisteredCourses = [];
 
     users.forEach((user) => {
@@ -260,58 +157,44 @@ const getAllRegisteredCourses = async (req, res) => {
       });
     });
 
-    return res.json(allRegisteredCourses);
+    res.json(allRegisteredCourses);
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
 const updateRegistration = async (req, res) => {
-    const { userId, courseId } = req.params;
-    const { newCourseId } = req.body;
-    console.log(userId, courseId, newCourseId)
+  try {
+    const result = await userService.updateRegistration(
+      req.params.userId,
+      req.params.courseId,
+      req.body.newCourseId
+    );
+    if (result.status === "not_found")
+      return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    if (result.status === "registration_not_found")
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy đăng ký khóa học cần cập nhật" });
+    if (result.status === "already_registered")
+      return res.status(400).json({ message: "Đã đăng ký khóa học này rồi" });
 
-    try {
-        const user = await User.findById(userId);
-
-        if (!user) {
-            return res.status(404).json({ message: 'Không tìm thấy người dùng' });
-        }
-        const index = user.registrationCourses.findIndex(
-            (reg) => reg.course_id.toString() === courseId
-        );
-
-        if (index === -1) {
-            return res.status(404).json({ message: 'Không tìm thấy đăng ký khóa học cần cập nhật' });
-        }
-        const existed = user.registrationCourses.find(
-            (reg) => reg.course_id.toString() === newCourseId
-        );
-        if (existed) {
-            return res.status(400).json({ message: 'Đã đăng ký khóa học này rồi' });
-        }
-        user.registrationCourses[index].course_id = newCourseId;
-        user.registrationCourses[index].enrollment_date = new Date();
-
-        await user.save();
-        res.status(200).json({ message: 'Success' });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Internal server error' });
-    }
+    res.status(200).json({ message: "Success" });
+  } catch (err) {
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
-
 
 module.exports = {
   getAllUsers,
   getUserById,
   getCurrentUser,
-  updateUserById,
   deleteUsersByIds,
+  updateUserById,
   addRegistrationCourse,
   getRegisteredCourses,
   unregisterCourse,
   getAllRegisteredCourses,
-  updateRegistration
+  updateRegistration,
 };

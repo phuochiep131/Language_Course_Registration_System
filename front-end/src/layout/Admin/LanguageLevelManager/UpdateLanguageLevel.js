@@ -19,22 +19,7 @@ import {
     const [spinning, setSpinning] = useState(false);
     const [messageApi, contextHolder] = message.useMessage();
   
-    const successMessage = () => {
-      messageApi.open({
-        type: "success",
-        content: "Cập nhật thành công",
-      });
-    };
-  
-    const errorMessage = () => {
-      messageApi.open({
-        type: "error",
-        content: "Cập nhật thất bại, trình độ này đã có!",
-      });
-    };
-  
-    const fetchLanguage = async () => {
-      //console.log(id)
+    const fetchLanguage = async () => {      
       setSpinning(true);
       try {
         const res = await axios.get(`http://localhost:3005/api/languagelevel/${id}`, {
@@ -46,7 +31,7 @@ import {
           language_levelid: res.data.language_levelid,
         });
       } catch (error) {
-        console.error("Lỗi khi lấy dữ liệu trình độ:", error);
+        //console.error("Lỗi khi lấy dữ liệu trình độ:", error);
         messageApi.error("Không thể tải dữ liệu trình độ");
       } finally {
         setSpinning(false);
@@ -61,13 +46,13 @@ import {
         await axios.put(`http://localhost:3005/api/languagelevel/${id}`, values, {
           withCredentials: true,
         });
-        successMessage();
+        messageApi.success("Sửa trình độ thành công");
         setTimeout(() => {
           navigate("/admin/languageslevel");
         }, 1000);
       } catch (error) {
-        console.error("Cập nhật thất bại:", error);
-        errorMessage();
+        const errorMsg = error.response?.data?.message || error.message
+        messageApi.error(errorMsg);
       } finally {
         setSpinning(false);
       }

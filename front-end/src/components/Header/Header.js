@@ -17,8 +17,7 @@ function Header() {
       .get(`http://localhost:3005/api/user/info`, {
         withCredentials: true,
       })
-      .then((response) => {
-        console.log(response.data);
+      .then((response) => {        
         setCurrentUser(response.data);
       })
       .catch((error) => {

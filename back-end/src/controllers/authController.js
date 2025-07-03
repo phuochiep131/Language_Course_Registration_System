@@ -1,79 +1,42 @@
-const User = require('../models/user');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const authService = require('../services/authService');
 const config = require('../config/jwt');
+const jwtSecret = config.SECRET_KEY
 
-const randomid = async () => {    
-    let userid;
-    let isUnique = false;
-
-    while(!isUnique){
-        const randomNumber = Math.floor(Math.random() * 100000)
-        const formattedId = `8386${randomNumber.toString().padStart(6, '0')}`;
-
-        const existingId = await User.findOne({ userid: formattedId });
-        if (!existingId) {
-            userid = formattedId;
-            isUnique = true;
-        }
+const register = async (req, res) => {    
+    const { fullname } = req.body;
+    if (fullname && /[^a-zA-ZÀ-ỹ\s]/.test(fullname)) {
+      return res.status(400).json({ message: "Họ tên không hợp lệ" });
     }
-    return userid
-}
 
-const register = async (req, res) => {
-    const { username, password, fullname, email, role, avatar } = req.body;
+    const { address } = req.body;    
+    if (address && /[^a-zA-ZÀ-ỹ,/0-9\s]/.test(address)) {
+      return res.status(400).json({ message: "Địa chỉ không hợp lệ" });
+    }
 
-    try {        
-        const existingUser = await User.findOne({ username });
-        if (existingUser) {
-            return res.status(400).json({ message: 'Username is already taken' });
+    try {
+        const result = await authService.registerUser(req.body);
+
+        if (!result.success) {
+            return res.status(400).json({ message: result.message });
         }
 
-        const userid = await randomid()
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new User({
-            userid,
-            username,
-            password: hashedPassword,
-            email,
-            fullname,
-            role: role ? role : 'Student',
-            avatar: avatar ? avatar : "https://cdn-icons-png.flaticon.com/512/8792/8792047.png"
-        });
-
-        await newUser.save();
-
-        res.status(201).json({ message: 'Registration successful' });
+        res.status(201).json({ message: result.message });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });
     }
 };
 
-
 const login = async (req, res) => {
-    const { username, password } = req.body;
-
-    //console.log("Login attempt:", username)
-
     try {
-        const user = await User.findOne({ username });
+        const result = await authService.loginUser(req.body, jwtSecret);
 
-        if (!user) return res.status(400).json({ message: 'Invalid credentials' });
+        if (!result.success) {
+            return res.status(400).json({ message: result.message });
+        }
 
-        const isMatch = await bcrypt.compare(password, user.password);
-
-        if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
-
-        const secretKey = "LangCourse";
-
-        const token = jwt.sign({ user: { id: user._id, username: user.username, role: user.role} }, secretKey, {
-            expiresIn: '6h',
-        });
-        
-        res.cookie('token', token, { httpOnly: true });
-        res.json({ token });
-
+        res.cookie('token', result.token, { httpOnly: true });
+        res.json({ token: result.token });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Internal Server Error' });
@@ -82,9 +45,7 @@ const login = async (req, res) => {
 
 const logout = async (req, res) => {
     try {
-        // Gỡ bỏ token từ cookie
         res.clearCookie('token');
-
         res.json({ message: 'Logout successful' });
     } catch (err) {
         console.error(err);

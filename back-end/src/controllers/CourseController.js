@@ -1,85 +1,37 @@
-const Course = require('../models/Course');
+// controllers/courseController.js
+const courseService = require('../services/courseService');
 
 const getAllCourses = async (req, res) => {
   try {
-    const courses = await Course.find()
-      .populate('language_id')
-      .populate('languagelevel_id')
-      .populate('teacher_id');
-
-    const result = courses.map(course => ({
-      id: course._id.toString(),
-      courseid: course.courseid,
-
-      language_id: course.language_id?._id.toString(),
-      language: course.language_id?.language || '',
-
-      languagelevel_id: course.languagelevel_id?._id.toString(),
-      languagelevel: course.languagelevel_id?.language_level || '',
-
-      teacher_id: course.teacher_id?._id.toString(),
-      teacher_name: course.teacher_id?.full_name || '',
-
-      Start_Date: course.Start_Date,
-      Number_of_periods: course.Number_of_periods,
-      Tuition: course.Tuition,
-      Description: course.Description
-    }));
-
-    res.json(result);
+    const courses = await courseService.getAll();
+    res.json(courses);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-
 const getCourseById = async (req, res) => {
-  const { id } = req.params;
-  console.log(id)
   try {
-    const course = await Course.findById(id);
+    const course = await courseService.getById(req.params.id);
     if (!course) {
       return res.status(404).json({ message: 'Course is not exist' });
     }
     res.json(course);
-  } catch (error) {
-    console.error('Error fetching course:', error);
+  } catch (err) {
     res.status(500).json({ message: 'Server Error' });
   }
 };
 
-const randomid = async () => {    
-    let courseid;
-    let isUnique = false;
-
-    while(!isUnique){
-        const randomNumber = Math.floor(Math.random() * 1000)
-        const formattedId = `KH${randomNumber.toString().padStart(4, '0')}`;
-
-        const existingId = await Course.findOne({ courseid: formattedId });
-        if (!existingId) {
-            courseid = formattedId;
-            isUnique = true;
-        }
-    }
-    return courseid
-}
-
 const createCourse = async (req, res) => {
-  const courseid = await randomid()
+  const { Number_of_periods, Tuition } = req.body;
+    if (Number_of_periods && Number_of_periods < 0) {
+      return res.status(400).json({ message: "Số tiết không hợp lệ" });
+    }
+    if (Tuition && Tuition < 0) {
+      return res.status(400).json({ message: "Học phí không hợp lệ" });
+    }
   try {
-    const newCourse = new Course({
-      courseid: courseid,
-      language_id: req.body.language_id,
-      languagelevel_id: req.body.languagelevel_id,
-      teacher_id: req.body.teacher_id,
-      Start_Date: req.body.Start_Date,
-      Number_of_periods: req.body.Number_of_periods,
-      Tuition: req.body.Tuition,
-      Description: req.body.Description || ''
-    });
-
-    const saved = await newCourse.save();
+    const saved = await courseService.create(req.body);
     res.status(201).json(saved);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -87,38 +39,40 @@ const createCourse = async (req, res) => {
 };
 
 const updateCourse = async (req, res) => {
+  const { Number_of_periods, Tuition } = req.body;
+    if (Number_of_periods && Number_of_periods < 0) {
+      return res.status(400).json({ message: "Số tiết không hợp lệ" });
+    }
+    if (Tuition && Tuition < 0) {
+      return res.status(400).json({ message: "Học phí không hợp lệ" });
+    }
   try {
-    const updatedCourse = await Course.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
-    if (!updatedCourse) return res.status(404).json({ message: 'Course not found' });
-    res.json(updatedCourse);
+    const updated = await courseService.update(req.params.id, req.body);
+    if (!updated) return res.status(404).json({ message: 'Course not found' });
+    res.json(updated);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 };
 
-const deleteMultipleCourses  = async (req, res) => {
+const deleteMultipleCourses = async (req, res) => {
   try {
     const { courseIds } = req.body;
     if (!Array.isArray(courseIds)) {
       return res.status(400).json({ message: 'courseIds must be an array' });
     }
 
-    await Course.deleteMany({ _id: { $in: courseIds } });
+    await courseService.deleteMany(courseIds);
     res.json({ message: 'Deleted successfully' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-
 module.exports = {
-    getAllCourses,
-    createCourse,
-    getCourseById,
-    updateCourse,
-    deleteMultipleCourses 
-}
+  getAllCourses,
+  createCourse,
+  getCourseById,
+  updateCourse,
+  deleteMultipleCourses
+};

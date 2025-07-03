@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { Spin, message } from "antd";
 // import "./Courses.css";
@@ -120,7 +120,7 @@ function Courses() {
                   KHÓA HỌC {course.language?.language?.toUpperCase() || "CHƯA RÕ"}
                 </div>
                 <div className="level">
-                  TRÌNH ĐỘ {course.level?.language_level?.toUpperCase() || "CHƯA RÕ"}
+                  {course.level?.language_level?.toUpperCase() || "CHƯA RÕ"}
                 </div>
               </div>
 

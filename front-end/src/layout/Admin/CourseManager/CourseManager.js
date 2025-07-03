@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Table, Flex, Breadcrumb, Modal, Form, Input, Select, Spin } from 'antd';
+import { Button, Table, Flex, Breadcrumb, Modal, Form, Input, Select, Spin, message } from 'antd';
 import axios from 'axios';
 
 import { Link } from "react-router-dom";
@@ -14,6 +14,10 @@ function CourseManager() {
     const [spinning, setSpinning] = useState(false);
     const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
     const [filteredCourses, setFilteredCourses] = useState([]);
+    const [messageApi, contextHolder] = message.useMessage();
+
+    const [selectedLanguageId, setSelectedLanguageId] = useState(null);
+
 
     const columns = [  
         {
@@ -109,7 +113,7 @@ function CourseManager() {
     };
 
     useEffect(() => {
-        fetchData();
+        fetchData();        
     }, []);
 
     const showModal = () => setOpen(true);
@@ -124,6 +128,7 @@ function CourseManager() {
             withCredentials: true
         })
         .then(() => {
+            messageApi.success("Xóa khóa học thành công");
             fetchData();
             setSelectedRowKeys([]);
         })
@@ -133,18 +138,25 @@ function CourseManager() {
 
     const onFinish = (values) => {
         setSpinning(true);
-        setOpen(false);
 
         axios.post(`http://localhost:3005/api/course`, values, {
             withCredentials: true
         })
-        .then(() => fetchData())
-        .catch(err => console.log(err))
+        .then(() => {
+            fetchData()
+            messageApi.success("Thêm khóa học mới thành công");
+            setOpen(false)
+        })
+        .catch(error => {
+            const errorMsg = error.response?.data?.message || error.message                    
+            messageApi.error(errorMsg);
+        })
         .finally(() => setSpinning(false));
     };
 
     const handleSearch = (value) => {
         const keyword = value?.toString().toLowerCase().trim();
+        //console.log(teachers)
 
         if (!keyword) {
             setFilteredCourses(courses);
@@ -160,6 +172,7 @@ function CourseManager() {
 
     return (
         <Flex vertical gap={20} style={{ position: "relative" }}>
+            {contextHolder}
             <Spin spinning={spinning} fullscreen />
             <Breadcrumb items={[{ title: 'Admin Dashboard' }, { title: 'Quản lý khóa học' }]} />
 
@@ -217,11 +230,8 @@ function CourseManager() {
                 centered
             >
                 <Form layout="vertical" onFinish={onFinish}>
-                    {/* <Form.Item name="name_course" label="Tên khóa học" rules={[{ required: true, message: 'Vui lòng nhập tên khóa học!' }]}>
-                        <Input allowClear />
-                    </Form.Item>                                         */}
                     <Form.Item name="language_id" label="Ngôn ngữ" rules={[{ required: true, message: 'Vui lòng chọn ngôn ngữ!' }]}>
-                        <Select placeholder="Chọn ngôn ngữ">
+                        <Select placeholder="Chọn ngôn ngữ" onChange={(value) => setSelectedLanguageId(value)}>                        
                             {languages.map(lang => (
                                 <Select.Option key={lang._id} value={lang._id}>{lang.language}</Select.Option>
                             ))}
@@ -236,11 +246,15 @@ function CourseManager() {
                     </Form.Item>
                     <Form.Item name="teacher_id" label="Giảng viên" rules={[{ required: true, message: 'Vui lòng chọn giảng viên!' }]}>
                         <Select placeholder="Chọn giảng viên">
-                            {teachers.map(teacher => (
-                                <Select.Option key={teacher.id} value={teacher._id}>{teacher.full_name}</Select.Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
+                            {teachers
+                                .filter(teacher => teacher.language_id._id === selectedLanguageId)
+                                .map(teacher => (
+                                    <Select.Option key={teacher.id} value={teacher._id}>
+                                        {teacher.full_name}                                        
+                                    </Select.Option>                                    
+                                ))}
+                        </Select>                        
+                    </Form.Item>                    
                     <Form.Item name="Start_Date" label="Ngày bắt đầu" rules={[{ required: true, message: 'Vui lòng chọn ngày bắt đầu!' }]}>
                         <Input type="date" />
                     </Form.Item>

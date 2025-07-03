@@ -1,80 +1,81 @@
-const Language = require('../models/Language')
-const Teacher = require('../models/Teacher')
+const languageService = require('../services/languageService');
 
 const getLanguages = async (req, res) => {
     try {
-        const languages = await Language.find()
-        res.json(languages)
+        const languages = await languageService.getAllLanguages();
+        res.json(languages);
     } catch (err) {
-        res.status(500).json({ message: 'Server Error' })
+        res.status(500).json({ message: 'Server Error' });
     }
-}
+};
 
 const addLanguage = async (req, res) => {
-    const { languageid ,language } = req.body
-    try {
-        const newLanguage = new Language({ languageid ,language })
-        await newLanguage.save()
-        res.status(201).json({ message: 'Language added successfully' })
-    } catch (err) {
-        res.status(500).json({ message: 'Failed to add language' })
+    const { languageid, language } = req.body;    
+
+    if (languageid && /[^A-Z]/.test(languageid)) {
+      return res.status(400).json({ message: "Mã ngôn ngữ phải là chữ in hoa, không chứa số và ký tự đặc biệt" });
     }
-}
+
+    if (language && /[^a-zA-ZÀ-ỹ\s]/.test(language)) {
+      return res.status(400).json({ message: "Tên ngôn ngữ không hợp lệ" });
+    }
+
+    try {
+        await languageService.createLanguage(req.body);
+        res.status(201).json({ message: 'Language added successfully' });
+    } catch (err) {
+        res.status(500).json({ message: 'Failed to add language' });
+    }
+};
+
 
 const deleteMultipleLanguages = async (req, res) => {
-    const { languageIds } = req.body
-    console.log(req.body)
-
     try {
-        const teachersUsingLanguages = await Teacher.find({ language_id: { $in: languageIds } })
+        const result = await languageService.deleteLanguages(req.body.languageIds);
 
-        if (teachersUsingLanguages.length > 0) {
-            const usedLanguageIds = teachersUsingLanguages.map(teacher => teacher.language_id.toString())
+        if (!result.success) {
             return res.status(400).json({
                 message: 'Cannot delete. This language is currently in use by teachers.',
-                usedLanguageIds,
-            })
+                usedLanguageIds: result.usedLanguageIds,
+            });
         }
-        await Language.deleteMany({ _id: { $in: languageIds } })
-        res.json({ message: 'Languages deleted successfully' })
-    } catch (err) {
-        console.error(err)
-        res.status(500).json({ message: 'Delete failed' })
-    }
-}
 
+        res.json({ message: 'Languages deleted successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Delete failed' });
+    }
+};
 
 const getLanguageById = async (req, res) => {
-    console.log(req.params)
-
-    const id = req.params.id
-
     try {
-        const lang = await Language.findById(id)
-        if (!lang) return res.status(404).json({ message: 'Not found' })
-        res.json(lang)
+        const lang = await languageService.getLanguageById(req.params.id);
+        if (!lang) return res.status(404).json({ message: 'Not found' });
+        res.json(lang);
     } catch (err) {
-        console.error('Error fetching language:', err)
-        res.status(500).json({ message: 'Error fetching language' })
+        console.error('Error fetching language:', err);
+        res.status(500).json({ message: 'Error fetching language' });
     }
-}
+};
 
 const updateLanguage = async (req, res) => {
-    const { id } = req.params
-    const { language } = req.body
-    try {
-        const updated = await Language.findByIdAndUpdate(id, { language }, { new: true })
-        if (!updated) return res.status(404).json({ message: 'Not found' })
-        res.json({ message: 'Update successful' })
-    } catch (err) {
-        res.status(500).json({ message: 'Update failed' })
+    const { language } = req.body;
+    if (language && /[^a-zA-ZÀ-ỹ\s]/.test(language)) {
+      return res.status(400).json({ message: "Tên ngôn ngữ không hợp lệ" });
     }
-}
+    try {
+        const updated = await languageService.updateLanguageById(req.params.id, req.body.language);
+        if (!updated) return res.status(404).json({ message: 'Not found' });
+        res.json({ message: 'Update successful' });
+    } catch (err) {
+        res.status(500).json({ message: 'Update failed' });
+    }
+};
 
 module.exports = {
     getLanguages,
     addLanguage,
     deleteMultipleLanguages,
     getLanguageById,
-    updateLanguage
-}
+    updateLanguage,
+};
