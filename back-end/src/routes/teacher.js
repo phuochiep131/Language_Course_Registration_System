@@ -34,6 +34,7 @@ router.get('/', teacherController.getAllTeachers);
  *         required: true
  *         schema:
  *           type: string
+ *         description: _id của giảng viên
  *     responses:
  *       200:
  *         description: Thành công
@@ -55,20 +56,23 @@ router.get('/:id', teacherController.getTeacherById);
  *           schema:
  *             type: object
  *             required:
- *               - name
+ *               - full_name
  *               - email
  *             properties:
- *               name:
+ *               full_name:
  *                 type: string
+ *                 description: Họ tên giảng viên
+ *               gender:
+ *                 type: string
+ *                 enum: [Nam, Nữ]
  *               email:
  *                 type: string
- *               phone:
+ *               language_id:
  *                 type: string
- *               description:
- *                 type: string
+ *                 description: ID của ngôn ngữ giảng dạy
  *     responses:
  *       201:
- *         description: Thêm thành công
+ *         description: Thêm giảng viên thành công
  */
 router.post('/', authMiddleware.authenticate, authMiddleware.isAdmin, teacherController.createTeacher);
 
@@ -84,6 +88,7 @@ router.post('/', authMiddleware.authenticate, authMiddleware.isAdmin, teacherCon
  *         required: true
  *         schema:
  *           type: string
+ *         description: _id của giảng viên cần cập nhật
  *     requestBody:
  *       required: true
  *       content:
@@ -91,13 +96,13 @@ router.post('/', authMiddleware.authenticate, authMiddleware.isAdmin, teacherCon
  *           schema:
  *             type: object
  *             properties:
- *               name:
+ *               full_name:
+ *                 type: string
+ *               gender:
  *                 type: string
  *               email:
  *                 type: string
- *               phone:
- *                 type: string
- *               description:
+ *               language_id:
  *                 type: string
  *     responses:
  *       200:
@@ -120,15 +125,18 @@ router.put('/:id', authMiddleware.authenticate, authMiddleware.isAdmin, teacherC
  *           schema:
  *             type: object
  *             required:
- *               - ids
+ *               - teacherIds
  *             properties:
- *               ids:
+ *               teacherIds:
  *                 type: array
  *                 items:
  *                   type: string
+ *                 description: Danh sách _id của giảng viên cần xóa
  *     responses:
  *       200:
  *         description: Xóa thành công
+ *       400:
+ *         description: Dữ liệu không hợp lệ hoặc không xóa được
  */
 router.delete('/multiple', authMiddleware.authenticate, authMiddleware.isAdmin, teacherController.deleteMultipleTeachers);
 

@@ -35,10 +35,15 @@ router.get('/', languageController.getLanguages);
  *           schema:
  *             type: object
  *             required:
- *               - name
+ *               - languageid
+ *               - language
  *             properties:
- *               name:
+ *               languageid:
  *                 type: string
+ *                 description: Mã định danh ngôn ngữ (unique)
+ *               language:
+ *                 type: string
+ *                 description: Tên ngôn ngữ
  *     responses:
  *       201:
  *         description: Thêm thành công
@@ -58,9 +63,9 @@ router.post('/add', authMiddleware.authenticate, authMiddleware.isAdmin, languag
  *           schema:
  *             type: object
  *             required:
- *               - ids
+ *               - languageIds
  *             properties:
- *               ids:
+ *               languageIds:
  *                 type: array
  *                 items:
  *                   type: string
@@ -103,6 +108,7 @@ router.get('/:id', languageController.getLanguageById);
  *         required: true
  *         schema:
  *           type: string
+ *         description: MongoDB `_id` của ngôn ngữ
  *     requestBody:
  *       required: true
  *       content:
@@ -110,8 +116,9 @@ router.get('/:id', languageController.getLanguageById);
  *           schema:
  *             type: object
  *             properties:
- *               name:
+ *               language:
  *                 type: string
+ *                 description: Tên ngôn ngữ mới
  *     responses:
  *       200:
  *         description: Cập nhật thành công

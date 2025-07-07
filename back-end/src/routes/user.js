@@ -114,10 +114,9 @@ router.get('/:id/registered-courses', authMiddleware.authenticate, userControlle
  *           schema:
  *             type: object
  *             properties:
- *               study_time_id:
+ *               enrollment_date:
  *                 type: string
- *               study_location_id:
- *                 type: string
+ *                 format: date
  *     responses:
  *       200:
  *         description: Cập nhật thành công
@@ -145,7 +144,7 @@ router.put('/update-registration/:userId/:courseId', userController.updateRegist
  *           schema:
  *             type: object
  *             properties:
- *               name:
+ *               fullname:
  *                 type: string
  *               email:
  *                 type: string
@@ -193,7 +192,7 @@ router.delete('/:id/unregister-course/:courseId', userController.unregisterCours
  *           schema:
  *             type: object
  *             properties:
- *               ids:
+ *               userIds:
  *                 type: array
  *                 items:
  *                   type: string
@@ -215,6 +214,7 @@ router.delete('/multiple', authMiddleware.authenticate, authMiddleware.isAdmin, 
  *       - name: id
  *         in: path
  *         required: true
+ *         description: ID của người dùng
  *         schema:
  *           type: string
  *     requestBody:
@@ -225,18 +225,28 @@ router.delete('/multiple', authMiddleware.authenticate, authMiddleware.isAdmin, 
  *             type: object
  *             required:
  *               - course_id
- *               - study_time_id
- *               - study_location_id
  *             properties:
  *               course_id:
  *                 type: string
- *               study_time_id:
- *                 type: string
- *               study_location_id:
- *                 type: string
+ *                 description: ID khóa học muốn đăng ký
  *     responses:
- *       201:
- *         description: Đăng ký thành công
+ *       200:
+ *         description: Đăng ký khóa học thành công
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 user:
+ *                   type: object
+ *       404:
+ *         description: Không tìm thấy người dùng
+ *       400:
+ *         description: Khóa học đã được đăng ký trước đó
+ *       500:
+ *         description: Lỗi máy chủ
  */
 router.post('/:id/register-course', authMiddleware.authenticate, userController.addRegistrationCourse);
 

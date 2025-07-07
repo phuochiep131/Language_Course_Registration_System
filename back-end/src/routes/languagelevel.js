@@ -35,17 +35,18 @@ router.get('/', languageController.getAllLanguageslevel);
  *           schema:
  *             type: object
  *             required:
- *               - name
- *               - language_id
+ *               - language_levelid
+ *               - language_level
  *             properties:
- *               name:
+ *               language_levelid:
  *                 type: string
- *               language_id:
+ *                 description: Mã trình độ (duy nhất)
+ *               language_level:
  *                 type: string
- *                 description: ID của ngôn ngữ liên kết
+ *                 description: Tên trình độ ngôn ngữ
  *     responses:
  *       201:
- *         description: Thêm thành công
+ *         description: Thêm trình độ ngôn ngữ thành công
  */
 router.post('/add', authMiddleware.authenticate, authMiddleware.isAdmin, languageController.addLanguagelevel);
 
@@ -62,16 +63,18 @@ router.post('/add', authMiddleware.authenticate, authMiddleware.isAdmin, languag
  *           schema:
  *             type: object
  *             required:
- *               - ids
+ *               - languagelevelIds
  *             properties:
- *               ids:
+ *               languagelevelIds:
  *                 type: array
  *                 items:
  *                   type: string
- *                 description: Danh sách ID cần xóa
+ *                 description: Danh sách ID (_id trong MongoDB) cần xóa
  *     responses:
  *       200:
- *         description: Xóa thành công
+ *         description: Xóa trình độ thành công
+ *       400:
+ *         description: Danh sách ID không hợp lệ hoặc đang được sử dụng
  */
 router.delete('/multiple', authMiddleware.authenticate, authMiddleware.isAdmin, languageController.deleteMultipleLanguagelevel);
 
@@ -87,11 +90,12 @@ router.delete('/multiple', authMiddleware.authenticate, authMiddleware.isAdmin, 
  *         required: true
  *         schema:
  *           type: string
+ *         description: _id của trình độ ngôn ngữ
  *     responses:
  *       200:
  *         description: Thành công
  *       404:
- *         description: Không tìm thấy trình độ ngôn ngữ
+ *         description: Không tìm thấy trình độ
  */
 router.get('/:id', languageController.getLanguageLevelById);
 
@@ -99,7 +103,7 @@ router.get('/:id', languageController.getLanguageLevelById);
  * @swagger
  * /languagelevel/{id}:
  *   put:
- *     summary: Cập nhật trình độ ngôn ngữ
+ *     summary: Cập nhật thông tin trình độ ngôn ngữ
  *     tags: [LanguageLevels]
  *     parameters:
  *       - name: id
@@ -107,7 +111,7 @@ router.get('/:id', languageController.getLanguageLevelById);
  *         required: true
  *         schema:
  *           type: string
- *         description: ID trình độ cần cập nhật
+ *         description: _id trình độ cần cập nhật
  *     requestBody:
  *       required: true
  *       content:
@@ -115,10 +119,12 @@ router.get('/:id', languageController.getLanguageLevelById);
  *           schema:
  *             type: object
  *             properties:
- *               name:
+ *               language_levelid:
  *                 type: string
- *               language_id:
+ *                 description: Mã trình độ (mới nếu muốn cập nhật)
+ *               language_level:
  *                 type: string
+ *                 description: Tên trình độ (mới nếu muốn cập nhật)
  *     responses:
  *       200:
  *         description: Cập nhật thành công

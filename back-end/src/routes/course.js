@@ -56,22 +56,30 @@ router.get('/:id', courseController.getCourseById);
  *           schema:
  *             type: object
  *             required:
- *               - name_course
- *               - categories_id
  *               - language_id
+ *               - languagelevel_id
  *               - teacher_id
  *             properties:
- *               name_course:
- *                 type: string
- *               categories_id:
- *                 type: string
  *               language_id:
  *                 type: string
+ *               languagelevel_id:
+ *                 type: string
  *               teacher_id:
+ *                 type: string
+ *               Start_Date:
+ *                 type: string
+ *                 format: date
+ *               Number_of_periods:
+ *                 type: number
+ *               Tuition:
+ *                 type: number
+ *               Description:
  *                 type: string
  *     responses:
  *       201:
  *         description: Tạo khóa học thành công
+ *       400:
+ *         description: Dữ liệu không hợp lệ
  */
 router.post('/', authMiddleware.authenticate, authMiddleware.isAdmin, courseController.createCourse);
 
@@ -95,13 +103,20 @@ router.post('/', authMiddleware.authenticate, authMiddleware.isAdmin, courseCont
  *           schema:
  *             type: object
  *             properties:
- *               name_course:
- *                 type: string
- *               categories_id:
- *                 type: string
  *               language_id:
  *                 type: string
+ *               languagelevel_id:
+ *                 type: string
  *               teacher_id:
+ *                 type: string
+ *               Start_Date:
+ *                 type: string
+ *                 format: date
+ *               Number_of_periods:
+ *                 type: number
+ *               Tuition:
+ *                 type: number
+ *               Description:
  *                 type: string
  *     responses:
  *       200:
@@ -113,22 +128,26 @@ router.put('/:id', authMiddleware.authenticate, authMiddleware.isAdmin, courseCo
 
 /**
  * @swagger
- * /course/{id}:
+ * /course/delete-many:
  *   delete:
- *     summary: Xóa khóa học theo ID
+ *     summary: Xóa nhiều khóa học theo _id
  *     tags: [Courses]
- *     parameters:
- *       - name: id
- *         in: path
- *         required: true
- *         schema:
- *           type: string
- *         description: ID khóa học cần xóa
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - courseIds
+ *             properties:
+ *               courseIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
  *     responses:
  *       200:
  *         description: Xóa thành công
- *       404:
- *         description: Không tìm thấy khóa học
  */
 router.delete('/:id', authMiddleware.authenticate, authMiddleware.isAdmin, courseController.deleteMultipleCourses);
 
