@@ -24,10 +24,16 @@ const authController = require('../controllers/authController');
  *             required:
  *               - username
  *               - password
+ *               - fullname
+ *               - email
  *             properties:
  *               username:
  *                 type: string
  *               password:
+ *                 type: string
+ *               fullname:
+ *                 type: string
+ *               email:
  *                 type: string
  *     responses:
  *       201:
