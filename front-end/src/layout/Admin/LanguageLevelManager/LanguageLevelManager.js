@@ -218,6 +218,7 @@ function LanguageManager() {
                                         return Promise.reject("Mã trình độ không được chứa ký tự đặc biệt!");
                                     }
 
+                                    
                                     if (!/^[A-Z0-9]+$/.test(value))
                                     {
                                         return Promise.reject("Mã trình độ chỉ bao gồm chữ in hoa và số!");
@@ -233,7 +234,9 @@ function LanguageManager() {
                     <Form.Item
                         label="Trình độ"
                         name="language_level"
-                        rules={[{ required: true, message: 'Vui lòng nhập tên trình độ!' }]}
+                        rules={[
+                            { required: true, message: 'Vui lòng nhập tên trình độ!' }
+                        ]}
                     >
                         <Input placeholder="Nhập tên trình độ" allowClear />
                     </Form.Item>

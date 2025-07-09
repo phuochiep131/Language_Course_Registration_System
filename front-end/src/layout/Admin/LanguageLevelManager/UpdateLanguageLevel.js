@@ -40,6 +40,10 @@ import {
 
 
   
+
+
+
+
     const onFinish = async (values) => {
       setSpinning(true);
       try {
@@ -79,7 +83,10 @@ import {
           onFinish={onFinish}
           style={{ maxWidth: 400, margin: "0 auto" }}
         >
-          <Form.Item label="Mã trình độ (ID)" name="language_levelid">
+          <Form.Item 
+            label="Mã trình độ (ID)" 
+            name="language_levelid"
+          >
             <Input disabled />
           </Form.Item>
           <Form.Item
@@ -96,11 +103,13 @@ import {
                     return Promise.reject("Tên trình độ không được chứa ký tự đặc biệt!");
                   }
 
+
                   return Promise.resolve();
                 },
               },
             ]}
           >
+            
             <Input placeholder="Ví dụ: A1, A2, A3,..." />
           </Form.Item>
           <Form.Item>
@@ -119,5 +128,16 @@ import {
     );
   }
   
+
+
+
+
   export default UpdateLanguage;
+
+
+
+
+
+
+
   
