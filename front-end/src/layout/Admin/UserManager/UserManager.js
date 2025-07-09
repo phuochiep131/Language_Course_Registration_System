@@ -13,6 +13,13 @@ function UserManager() {
     const [spinning, setSpinning] = useState(false);
     const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
     const [filteredUsers, setFilteredUsers] = useState([]);
+    const [form] = Form.useForm();
+
+    useEffect(() => {
+    if (open) {
+        form.resetFields();
+    }
+    }, [open]);
 
     const [messageApi, contextHolder] = message.useMessage();
 
@@ -145,6 +152,7 @@ function UserManager() {
             withCredentials: true,
             });
             successMessage()
+            form.resetFields()
             setOpen(false)
             fetchData();
         } catch (error) {
@@ -302,15 +310,41 @@ function UserManager() {
                 centered
             >
                 <Form
+                    form={form}
                     name="dream_login"
                     className="login-form"
                     initialValues={{ role: "Student" }}
                     onFinish={onFinish}
                 >
-                    <Form.Item name="name" rules={[{ required: true, message: 'Vui lòng nhập họ và tên!' }]}>
+                    <Form.Item 
+                        name="name" 
+                        rules={[
+                            { required: true, message: "Vui lòng nhập họ và tên!" },
+                            {
+                                validator: (_, value) => {
+                                    if (!value) return Promise.resolve();
+
+                                    if (/\d/.test(value)) 
+                                    {
+                                        return Promise.reject("Họ và tên không được chứa ký tự số!");
+                                    }
+
+                                    if (/[^a-zA-ZÀ-Ỹà-ỹ\s]/.test(value))
+                                    {
+                                        return Promise.reject("Họ và tên không được chứa ký tự đặc biệt!");
+                                    }
+
+                                    return Promise.resolve();
+                                }
+                            }
+                        ]}
+                    >
                         <Input prefix={<SmileOutlined className="site-form-item-icon" />} placeholder="Họ và tên" allowClear />
                     </Form.Item>
-                    <Form.Item name="email" rules={[{ required: true, message: 'Vui lòng nhập email!' }]}>
+                    <Form.Item name="email" rules={[
+                        { required: true, message: 'Vui lòng nhập email!' },
+                        { type: 'email', message: 'Email không hợp lệ!' }
+                        ]}>
                         <Input prefix={<MailOutlined className="site-form-item-icon" />} placeholder="Email" allowClear />
                     </Form.Item>
                     <Form.Item name="gender" rules={[{ required: true, message: 'Vui lòng chọn giới tính!' }]}>
@@ -323,7 +357,10 @@ function UserManager() {
                     <Form.Item name="username" rules={[{ required: true, message: 'Vui lòng nhập tên đăng nhập!' }]}>
                         <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Tên đăng nhập" allowClear />
                     </Form.Item>
-                    <Form.Item name="password" rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}>
+                    <Form.Item name="password" rules={[
+                        { required: true, message: 'Vui lòng nhập mật khẩu!' },
+                        { min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự!' }
+                        ]}>
                         <Input.Password prefix={<LockOutlined className="site-form-item-icon" />} type="password" placeholder="Mật khẩu" allowClear />
                     </Form.Item>
                     <Form.Item name="address" rules={[{ required: true, message: 'Vui lòng nhập địa chỉ!' }]}>

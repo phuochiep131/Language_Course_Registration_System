@@ -136,7 +136,26 @@ function UpdateUser() {
                     <Form.Item
                         name="name"
                         label="Họ và tên"
-                        rules={[{ required: true, message: "Vui lòng nhập họ và tên!" }]}
+                        rules={[
+                            { required: true, message: "Vui lòng nhập họ và tên!" },
+                            {
+                                validator: (_, value) => {
+                                    if (!value) return Promise.resolve();
+
+                                    if (/\d/.test(value)) 
+                                    {
+                                        return Promise.reject("Họ và tên không được chứa ký tự số!");
+                                    }
+
+                                    if (/[^a-zA-ZÀ-Ỹà-ỹ\s]/.test(value))
+                                    {
+                                        return Promise.reject("Họ và tên không được chứa ký tự đặc biệt!");
+                                    }
+
+                                    return Promise.resolve();
+                                }
+                            }
+                        ]}
                     >
                         <Input prefix={<SmileOutlined className="site-form-item-icon" />} placeholder="Họ và tên" allowClear size="large" />
                     </Form.Item>
@@ -149,7 +168,10 @@ function UpdateUser() {
                     <Form.Item
                         name="email"
                         label="Email"
-                        rules={[{ required: true, message: "Vui lòng nhập email!" }]}
+                        rules={[
+                            { required: true, message: "Vui lòng nhập email!" },
+                            { type: 'email', message: 'Email không hợp lệ!' }
+                        ]}
                     >
                         <Input prefix={<MailOutlined className="site-form-item-icon" />} placeholder="Email" allowClear size="large" />
                     </Form.Item>
@@ -163,6 +185,10 @@ function UpdateUser() {
                     <Form.Item
                         name="password"
                         label="Mật khẩu"
+                        rules={[
+                        { required: true, message: 'Vui lòng nhập mật khẩu!' },
+                        { min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự!' }
+                        ]}
                     >
                         <Input.Password
                             prefix={<LockOutlined className="site-form-item-icon" />}
@@ -174,7 +200,8 @@ function UpdateUser() {
                     </Form.Item>
                     <Form.Item
                         name="address"
-                        label="Địa chỉ"                        
+                        label="Địa chỉ"  
+                        rules={[{ required: true, message: 'Vui lòng nhập địa chỉ!' }]}               
                     >
                         <Input prefix={<SmileOutlined className="site-form-item-icon" />} placeholder="Địa chỉ  " allowClear size="large" />
                     </Form.Item>
