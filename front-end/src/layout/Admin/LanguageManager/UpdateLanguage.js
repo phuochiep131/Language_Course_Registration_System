@@ -100,7 +100,24 @@ import {
           <Form.Item
             label="Tên ngôn ngữ"
             name="language"
-            rules={[{ required: true, message: "Vui lòng nhập tên ngôn ngữ" }]}
+            rules={[
+              { required: true, message: "Vui lòng nhập tên ngôn ngữ" },
+              {
+                validator: (_, value) => {
+                  if (!value) return Promise.resolve();
+                  if (/\d/.test(value)) 
+                  {
+                    return Promise.reject('Tên ngôn ngữ không được chứa ký tự số!');
+                  }
+                  if (/[^a-zA-ZÀ-Ỹà-ỹ\s]/.test(value))
+                  {
+                    return Promise.reject("Tên ngôn ngữ không được chứa ký tự đặc biệt!");
+                  }
+
+                  return Promise.resolve();
+                },
+              },
+            ]}
           >
             <Input placeholder="Ví dụ: Tiếng Anh" />
           </Form.Item>
@@ -121,4 +138,3 @@ import {
   }
   
   export default UpdateLanguage;
-  

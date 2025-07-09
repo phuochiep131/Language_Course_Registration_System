@@ -13,6 +13,13 @@ function LanguageManager() {
     const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
     const [messageApi, contextHolder] = message.useMessage();
     const [filteredLanguages, setFilteredLanguages] = useState([]);
+    const [form] = Form.useForm();
+
+    useEffect(() => {
+    if (open) {
+        form.resetFields();
+    }
+    }, [open]);
     
 
     const successMessage = () => {
@@ -92,6 +99,7 @@ function LanguageManager() {
             withCredentials: true
         })
             successMessage()
+            form.resetFields()
             setOpen(false)
             fetchData();
         } catch (error) {
@@ -230,18 +238,59 @@ function LanguageManager() {
                 width={400}
                 centered
             >
-                <Form onFinish={onFinish} layout="vertical">
+                <Form form={form} onFinish={onFinish} layout="vertical">
                     <Form.Item
                         label="Mã ngôn ngữ"
                         name="languageid"
-                        rules={[{ required: true, message: 'Vui lòng nhập mã ngôn ngữ!' }]}
+                        rules={[
+                            { required: true, message: 'Vui lòng nhập mã ngôn ngữ!' },
+                            {
+                                validator: (_, value) => {
+                                    if (!value) return Promise.resolve();
+                                    if (/\d/.test(value)) 
+                                    {
+                                        return Promise.reject('Mã ngôn ngữ không được chứa ký tự số!');
+                                    }
+
+                                    if (/[^a-zA-ZÀ-Ỹà-ỹ\s]/.test(value))
+                                    {
+                                        return Promise.reject("Mã ngôn ngôn ngữ không được chứa ký tự đặc biệt!");
+                                    }
+
+                                    if (!/^[A-Z]{3}$/.test(value)) 
+                                    {
+                                        return Promise.reject('Mã ngôn ngữ chỉ gồm 3 chữ cái in hoa!');
+                                    }
+
+                                    return Promise.resolve();
+                                },
+                            },
+
+                        ]}
                     >
                         <Input placeholder="Nhập mã ngôn ngữ" allowClear />
                     </Form.Item>
                     <Form.Item
                         label="Ngôn ngữ"
                         name="language"
-                        rules={[{ required: true, message: 'Vui lòng nhập tên ngôn ngữ!' }]}
+                        rules={[
+                            { required: true, message: 'Vui lòng nhập tên ngôn ngữ!' },
+                            {
+                                validator: (_, value) => {
+                                    if (!value) return Promise.resolve();
+                                    if (/\d/.test(value)) 
+                                    {
+                                        return Promise.reject('Tên ngôn ngữ không được chứa ký tự số!');
+                                    }
+                                    if (/[^a-zA-ZÀ-Ỹà-ỹ\s]/.test(value))
+                                    {
+                                        return Promise.reject("Tên ngôn ngữ không được chứa ký tự đặc biệt!");
+                                    }
+
+                                    return Promise.resolve();
+                                },
+                            },
+                        ]}
                     >
                         <Input placeholder="Nhập tên ngôn ngữ" allowClear />
                     </Form.Item>
