@@ -254,7 +254,7 @@ function LanguageManager() {
 
                                     if (/[^a-zA-ZÀ-Ỹà-ỹ\s]/.test(value))
                                     {
-                                        return Promise.reject("Mã ngôn ngôn ngữ không được chứa ký tự đặc biệt!");
+                                        return Promise.reject("Mã ngôn ngữ không được chứa ký tự đặc biệt!");
                                     }
 
                                     if (!/^[A-Z]{3}$/.test(value)) 
