@@ -235,7 +235,19 @@ function LanguageManager() {
                         label="Trình độ"
                         name="language_level"
                         rules={[
-                            { required: true, message: 'Vui lòng nhập tên trình độ!' }
+                            { required: true, message: 'Vui lòng nhập tên trình độ!' },
+                            {
+                                validator: (_, value) => {
+                                    if (!value) return Promise.resolve();
+
+                                    if (/[^a-zA-ZÀ-Ỹà-ỹ0-9\s]/.test(value))
+                                    {
+                                        return Promise.reject("Mã trình độ không được chứa ký tự đặc biệt!");
+                                    }
+
+                                    return Promise.resolve();
+                                },
+                            },
                         ]}
                     >
                         <Input placeholder="Nhập tên trình độ" allowClear />

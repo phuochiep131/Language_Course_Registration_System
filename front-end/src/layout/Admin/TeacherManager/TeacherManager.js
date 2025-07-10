@@ -25,6 +25,13 @@ function TeacherManager() {
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);  
   const [filteredTeachers, setFilteredTeachers] = useState([]);
   const [messageApi, contextHolder] = message.useMessage(); 
+  const [form] = Form.useForm();
+
+    useEffect(() => {
+    if (open) {
+        form.resetFields();
+    }
+    }, [open]);
 
 
   const columns = [
@@ -108,7 +115,8 @@ function TeacherManager() {
         withCredentials: true,
       });
 
-      messageApi.success("Tạo giảng viên thành công");
+      messageApi.success("Tạo giảng viên thành công")
+      form.resetFields()
       setOpen(false);
       fetchData();
     } catch (error) {
@@ -294,13 +302,34 @@ function TeacherManager() {
         centered
       >
         <Form
+          form={form}
           name="teacher_form"
           onFinish={onFinish}
           initialValues={{ gender: "Nam" }}
         >
           <Form.Item
             name="full_name"
-            rules={[{ required: true, message: "Vui lòng nhập họ tên!" }]}
+            rules={[
+              { required: true, message: "Vui lòng nhập họ tên!" },
+              {
+                validator: (_, value) => {
+                  if (!value) return Promise.resolve();
+
+                  if (/\d/.test(value)) 
+                  {
+                    return Promise.reject("Họ và tên không được chứa ký tự số!");
+                  }
+
+                  if (/[^a-zA-ZÀ-Ỹà-ỹ\s]/.test(value))
+                  {
+                    return Promise.reject("Họ và tên không được chứa ký tự đặc biệt!");
+                  }
+
+                  return Promise.resolve();
+                }
+              }
+
+            ]}
           >
             <Input
               prefix={<SmileOutlined />}
@@ -310,7 +339,10 @@ function TeacherManager() {
           </Form.Item>
           <Form.Item
             name="email"
-            rules={[{ required: true, message: "Vui lòng nhập email!" }]}
+            rules={[
+              { required: true, message: "Vui lòng nhập email!" },
+              { type: 'email', message: 'Email không hợp lệ!' }
+            ]}
           >
             <Input prefix={<MailOutlined />} placeholder="Email" allowClear />
           </Form.Item>

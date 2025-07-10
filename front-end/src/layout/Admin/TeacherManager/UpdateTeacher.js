@@ -92,26 +92,46 @@ function UpdateTeacher() {
                     }}
                     onFinish={onFinish}
                 >                    
-                    <Form.Item name="teacherid">
+                    <Form.Item
+                        name="teacherid"
+                    >
                         <Input disabled />
                     </Form.Item>
-                    <Form.Item name="name"
+                    <Form.Item 
+                    name="name"
                     label="Họ và tên"
-                    rules={[{ required: true, message: "Vui lòng nhập họ và tên!" }]}>
+                    rules={[
+                        { required: true, message: "Vui lòng nhập họ và tên!" },
+                        {
+                            validator: (_, value) => {
+                            if (!value) return Promise.resolve();
+
+                            if (/\d/.test(value)) 
+                            {
+                                return Promise.reject("Họ và tên không được chứa ký tự số!");
+                            }
+
+                            if (/[^a-zA-ZÀ-Ỹà-ỹ\s]/.test(value))
+                            {
+                                return Promise.reject("Họ và tên không được chứa ký tự đặc biệt!");
+                            }
+
+                            return Promise.resolve();
+                            }
+                        }
+                    ]}>
                         <Input prefix={<SmileOutlined />} placeholder="Họ và tên" allowClear size="large" />
                     </Form.Item>
-                    <Form.Item name="email"
-                    label="Email"
-                    rules={[{ required: true, message: "Vui lòng nhập email!" }]}
+                    <Form.Item 
+                        name="email"
+                        label="Email"
+                        rules={[
+                            { required: true, message: "Vui lòng nhập email!" },
+                            { type: 'email', message: 'Email không hợp lệ!' }
+                        ]}
                     >
                         <Input prefix={<MailOutlined />} placeholder="Email" allowClear size="large" />
                     </Form.Item>
-                    {/* <Form.Item name="username">
-                        <Input prefix={<UserOutlined />} placeholder="Tên đăng nhập" allowClear size="large" />
-                    </Form.Item>
-                    <Form.Item name="password">
-                        <Input.Password prefix={<LockOutlined />} placeholder="Mật khẩu" allowClear size="large" />
-                    </Form.Item> */}
                     <Form.Item 
                     name="language"
                     label="Ngôn ngữ giảng dạy"
