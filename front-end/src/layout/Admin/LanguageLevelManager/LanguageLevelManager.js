@@ -14,6 +14,14 @@ function LanguageManager() {
     const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
     const [messageApi, contextHolder] = message.useMessage();
     const [filteredLanguages, setFilteredLanguageslevel] = useState([]);
+    const [form] = Form.useForm();
+
+    useEffect(() => {
+    if (open) {
+        form.resetFields();
+    }
+    }, [open]);
+
 
     const columns = [
         {
@@ -74,7 +82,8 @@ function LanguageManager() {
             await axios.post(`http://localhost:3005/api/languagelevel/add`, values, {
             withCredentials: true
         })
-            messageApi.success("Thêm trình độ mới thành công");
+            messageApi.success("Thêm trình độ mới thành công")
+            form.resetFields()
             setOpen(false)
             fetchData();
         } catch (error) {
@@ -190,18 +199,56 @@ function LanguageManager() {
                 width={400}
                 centered
             >
-                <Form onFinish={onFinish} layout="vertical">
+                <Form 
+                    form={form}
+                    onFinish={onFinish}
+                    layout="vertical"
+                >
                     <Form.Item
                         label="Mã trình độ"
                         name="language_levelid"
-                        rules={[{ required: true, message: 'Vui lòng nhập mã trình độ!' }]}
+                        rules={[
+                            { required: true, message: 'Vui lòng nhập mã trình độ!' },
+                            {
+                                validator: (_, value) => {
+                                    if (!value) return Promise.resolve();
+
+                                    if (/[^a-zA-ZÀ-Ỹà-ỹ0-9\s]/.test(value))
+                                    {
+                                        return Promise.reject("Mã trình độ không được chứa ký tự đặc biệt!");
+                                    }
+
+                                    
+                                    if (!/^[A-Z0-9]+$/.test(value))
+                                    {
+                                        return Promise.reject("Mã trình độ chỉ bao gồm chữ in hoa và số!");
+                                    }
+
+                                    return Promise.resolve();
+                                },
+                            },
+                        ]}
                     >
                         <Input placeholder="Nhập mã trình độ" allowClear />
                     </Form.Item>
                     <Form.Item
                         label="Trình độ"
                         name="language_level"
-                        rules={[{ required: true, message: 'Vui lòng nhập tên trình độ!' }]}
+                        rules={[
+                            { required: true, message: 'Vui lòng nhập tên trình độ!' },
+                            {
+                                validator: (_, value) => {
+                                    if (!value) return Promise.resolve();
+
+                                    if (/[^a-zA-ZÀ-Ỹà-ỹ0-9\s]/.test(value))
+                                    {
+                                        return Promise.reject("Mã trình độ không được chứa ký tự đặc biệt!");
+                                    }
+
+                                    return Promise.resolve();
+                                },
+                            },
+                        ]}
                     >
                         <Input placeholder="Nhập tên trình độ" allowClear />
                     </Form.Item>
