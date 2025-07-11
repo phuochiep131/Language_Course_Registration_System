@@ -17,6 +17,14 @@ function CourseManager() {
     const [messageApi, contextHolder] = message.useMessage();
 
     const [selectedLanguageId, setSelectedLanguageId] = useState(null);
+    const [form] = Form.useForm();
+
+    useEffect(() => {
+    if (open) {
+        form.resetFields();
+    }
+    }, [open]);
+
 
 
     const columns = [  
@@ -144,7 +152,8 @@ function CourseManager() {
         })
         .then(() => {
             fetchData()
-            messageApi.success("Thêm khóa học mới thành công");
+            messageApi.success("Thêm khóa học mới thành công")
+            form.resetFields()
             setOpen(false)
         })
         .catch(error => {
@@ -229,7 +238,11 @@ function CourseManager() {
                 footer={null}
                 centered
             >
-                <Form layout="vertical" onFinish={onFinish}>
+                <Form 
+                    form={form}
+                    layout="vertical" 
+                    onFinish={onFinish}
+                >
                     <Form.Item name="language_id" label="Ngôn ngữ" rules={[{ required: true, message: 'Vui lòng chọn ngôn ngữ!' }]}>
                         <Select placeholder="Chọn ngôn ngữ" onChange={(value) => setSelectedLanguageId(value)}>                        
                             {languages.map(lang => (
@@ -254,20 +267,88 @@ function CourseManager() {
                                     </Select.Option>                                    
                                 ))}
                         </Select>                        
-                    </Form.Item>                    
-                    <Form.Item name="Start_Date" label="Ngày bắt đầu" rules={[{ required: true, message: 'Vui lòng chọn ngày bắt đầu!' }]}>
+                    </Form.Item>      
+
+                    <Form.Item 
+                        name="Start_Date" 
+                        label="Ngày bắt đầu" 
+                        rules={[
+                            { required: true, message: 'Vui lòng chọn ngày bắt đầu!' },
+                            {
+                                validator: (_, value) => {
+                                    if (!value) return Promise.resolve();
+
+                                    const selectedDate = new Date(value);
+                                    const today = new Date();
+                                    today.setHours(0, 0, 0, 0);
+
+                                    if (selectedDate < today) 
+                                    {
+                                        return Promise.reject("Ngày bắt đầu không được nhỏ hơn ngày hôm nay!");
+                                    }
+
+                                    return Promise.resolve();
+                                }
+                            }
+                        ]}>
+
                         <Input type="date" />
                     </Form.Item>
 
-                    <Form.Item name="Number_of_periods" label="Số tiết" rules={[{ required: true, message: 'Vui lòng nhập số tiết!' }]}>
+                    <Form.Item 
+                        name="Number_of_periods" 
+                        label="Số tiết" 
+                        rules={[
+                            { required: true, message: 'Vui lòng nhập số tiết!' },
+                            {
+                                validator: (_, value) => {
+                                    if (value === undefined || value === null || value === '') 
+                                    {
+                                        return Promise.resolve();
+                                    }
+
+                                    if (Number(value) <= 0) 
+                                    {
+                                        return Promise.reject('Số tiết phải là số dương!');
+                                    }
+
+                                    return Promise.resolve();
+                                }
+                            }
+                        ]}>
+
                         <Input type="number" min={1} />
                     </Form.Item>
 
-                    <Form.Item name="Description" label="Mô tả">
+                    <Form.Item 
+                        name="Description" 
+                        label="Mô tả"
+                    >
                         <Input.TextArea rows={3} allowClear />
                     </Form.Item>
 
-                    <Form.Item name="Tuition" label="Học phí (VNĐ)" rules={[{ required: true, message: 'Vui lòng nhập học phí!' }]}>
+                    <Form.Item 
+                        name="Tuition" 
+                        label="Học phí (VNĐ)" 
+                        rules={[
+                            { required: true, message: 'Vui lòng nhập học phí!' },
+                            {
+                                validator: (_, value) => {
+                                    if (value === undefined || value === null || value === '') 
+                                    {
+                                        return Promise.resolve();
+                                    }
+
+                                    if (Number(value) <= 0) 
+                                        {
+                                        return Promise.reject('Học phí phải là số dương!');
+                                    }
+
+                                    return Promise.resolve();
+                                }
+                            }
+                        ]}>
+
                         <Input type="number" min={0} />
                     </Form.Item>
 

@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Button, Table, Flex, Breadcrumb, Badge,  Modal, Form, Input, Spin, Select, Image, message } from 'antd';
 import axios from 'axios';
-import { /*FireOutlined,*/ LockOutlined, MailOutlined, SmileOutlined, UserOutlined } from '@ant-design/icons';
+import { /*FireOutlined,*/ LockOutlined, MailOutlined, SmileOutlined, UserOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 
 function UserManager() {
@@ -364,7 +364,7 @@ function UserManager() {
                         <Input.Password prefix={<LockOutlined className="site-form-item-icon" />} type="password" placeholder="Mật khẩu" allowClear />
                     </Form.Item>
                     <Form.Item name="address" rules={[{ required: true, message: 'Vui lòng nhập địa chỉ!' }]}>
-                        <Input prefix={<SmileOutlined className="site-form-item-icon" />} placeholder="Địa chỉ" allowClear />
+                        <Input prefix={<EnvironmentOutlined className="site-form-item-icon" />} placeholder="Địa chỉ" allowClear />
                     </Form.Item>
                     <Form.Item name="role" rules={[{ required: true, message: 'Vui lòng chọn quyền!' }]}>
                         <Select placeholder="Loại tài khoản" /*prefix={<FireOutlined className="site-form-item-icon" />}*/>
