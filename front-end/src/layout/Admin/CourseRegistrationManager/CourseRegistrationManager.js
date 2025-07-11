@@ -15,6 +15,13 @@ function CourseRegistrationManager() {
     const [filteredRegistrations, setFilteredRegistrations] = useState([]);
     const [spinning, setSpinning] = useState(false);
     const [messageApi, contextHolder] = message.useMessage();
+    const [form] = Form.useForm();
+
+    useEffect(() => {
+    if (open) {
+        form.resetFields();
+    }
+    }, [open]);
 
     const columns = [
         { 
@@ -125,7 +132,8 @@ function CourseRegistrationManager() {
                 withCredentials: true
             });
 
-            messageApi.success("Đăng ký thành công!");
+            messageApi.success("Đăng ký thành công!")
+            form.resetFields()
             setOpen(false);
             fetchData();
         } catch (err) {
@@ -224,11 +232,25 @@ function CourseRegistrationManager() {
                 width={400}
                 centered
             >
-                <Form layout="vertical" onFinish={onFinish}>
+                <Form 
+                    form={form}
+                    layout="vertical"
+                    onFinish={onFinish}
+                >
                     <Form.Item
                         name="userid"
                         label="Mã học viên"
-                        rules={[{ required: true, message: 'Vui lòng nhập mã học viên!' }]}
+                        rules={[
+                            { required: true, message: 'Vui lòng nhập mã học viên!' },
+                            {
+                                pattern: /^\d+$/,
+                                message: 'Mã học viên chỉ được chứa số!',
+                            },
+                            {
+                                len: 10,
+                                message: 'Mã học viên phải gồm đúng 10 chữ số!',
+                            }
+                        ]}
                     >
                         <Input placeholder="Nhập mã học viên" allowClear />
                     </Form.Item>
@@ -236,7 +258,9 @@ function CourseRegistrationManager() {
                     <Form.Item
                         name="course_id"
                         label="Khóa học"
-                        rules={[{ required: true, message: 'Vui lòng chọn khóa học!' }]}
+                        rules={[
+                            { required: true, message: 'Vui lòng chọn khóa học!' }
+                        ]}
                     >
                         <Select placeholder="Chọn khóa học">
                             {courses.map(course => (
