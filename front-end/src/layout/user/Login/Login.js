@@ -126,7 +126,7 @@ function Login() {
                         <Checkbox>Ghi nhớ đăng nhập</Checkbox>
                     </Form.Item>
 
-                    <Link className="login-form-forgot" to="">
+                    <Link className="login-form-forgot" to="/forgot-password">
                         Quên mật khẩu
                     </Link>
                 </Form.Item>
