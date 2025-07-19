@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Input, Button, message } from 'antd';
+import { Input, Button, Alert, Form } from 'antd';
 import './ResetPassword.css';
 
 const ResetPassword = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [alert, setAlert] = useState({ type: '', message: '' });
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -13,10 +14,14 @@ const ResetPassword = () => {
   const query = new URLSearchParams(location.search);
   const token = query.get('token');
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
+    setAlert({ type: '', message: '' });
     if (!token) {
-      message.error('Link không hợp lệ hoặc đã hết hạn!');
+      setAlert({ type: 'error', message: 'Link không hợp lệ hoặc đã hết hạn!' });
+      return;
+    }
+    if (password.length < 6) {
+      setAlert({ type: 'error', message: 'Mật khẩu phải có ít nhất 6 ký tự!' });
       return;
     }
     setLoading(true);
@@ -28,33 +33,53 @@ const ResetPassword = () => {
       });
       const data = await res.json();
       if (res.ok) {
-        message.success('Đổi mật khẩu thành công!');
-        setTimeout(() => navigate('/login'), 1500);
+        setAlert({ type: 'success', message: 'Đổi mật khẩu thành công!' });
+        setTimeout(() => navigate('/login'), 1000);
       } else {
-        message.error(data.message || 'Có lỗi xảy ra!');
+        setAlert({ type: 'error', message: data.message || 'Có lỗi xảy ra!' });
       }
     } catch (err) {
-      message.error('Không thể kết nối máy chủ!');
+      setAlert({ type: 'error', message: 'Không thể kết nối máy chủ!' });
     }
     setLoading(false);
   };
 
   return (
-    <div className="reset-password-container">
-      <h2>Đặt lại mật khẩu</h2>
-      <form onSubmit={handleSubmit} className="reset-password-form">
-        <label htmlFor="password">Nhập mật khẩu mới:</label>
-        <Input.Password
-          id="password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          required
-          placeholder="Mật khẩu mới"
-        />
-        <Button type="primary" htmlType="submit" loading={loading} className="reset-password-btn">
-          Đổi mật khẩu
-        </Button>
-      </form>
+    <div className="Login">
+      <Form
+        className="login-form"
+        style={{ width: 350 }}
+        onFinish={handleSubmit}
+      >
+        <Form.Item>
+          <h1 style={{ textAlign: 'center', fontSize: '20px' }}>ĐẶT LẠI MẬT KHẨU</h1>
+        </Form.Item>
+        <Form.Item
+          name="password"
+          rules={[{ required: true, message: 'Vui lòng nhập mật khẩu mới!' }]}
+        >
+          <Input.Password
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            placeholder="Mật khẩu mới"
+            size="large"
+            allowClear
+          />
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit" loading={loading} className="login-form-button" size="large" style={{ width: '100%' }}>
+            Đổi mật khẩu
+          </Button>
+        </Form.Item>
+        {alert.message && (
+          <Form.Item>
+            <Alert style={{ marginTop: 8 }} message={alert.message} type={alert.type} showIcon />
+          </Form.Item>
+        )}
+        <Form.Item>
+          <a href="/login">Quay lại đăng nhập</a>
+        </Form.Item>
+      </Form>
     </div>
   );
 };
