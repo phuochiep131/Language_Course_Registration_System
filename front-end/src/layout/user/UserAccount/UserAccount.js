@@ -5,7 +5,7 @@ import {
   SmileOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Button, Flex, Form, Input, Spin, message } from "antd";
+import { Button, Flex, Form, Input, Spin, message, Select } from "antd";
 import { useEffect, useState } from "react";
 import imageCompression from "browser-image-compression";
 import axios from "axios";
@@ -23,6 +23,7 @@ function UserAcc() {
   const [spinning, setSpinning] = useState(true);
   const [userData, setUserData] = useState();
   const [checkChangeAvatar, setCheckChangeAvatar] = useState(false);
+  const [genderEdited, setGenderEdited] = useState(false);
 
   const successMessage = () => {
     messageApi.open({
@@ -32,11 +33,11 @@ function UserAcc() {
     });
   };
 
-  const errorMessage = () => {
+  const errorMessage = (message = "Cập nhật thất bại") => {
     messageApi.open({
       key: "update",
       type: "error",
-      content: "Cập nhật thất bại",
+      content: message,
     });
   };
 
@@ -68,10 +69,12 @@ function UserAcc() {
       .then(() => {
         successMessage();
         setSpinning(false);
+        fetchUserData();
       })
       .catch((error) => {
         console.error("Error updating user:", error);
-        errorMessage();
+        const errorMsg = error.response?.data?.message || "Cập nhật thất bại";
+        errorMessage(errorMsg);
         setSpinning(false);
       });
   };
@@ -101,6 +104,8 @@ function UserAcc() {
           () => {},
           (error) => {
             console.log(error);
+            errorMessage("Lỗi upload ảnh");
+            setSpinning(false);
           },
           () => {
             getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
@@ -109,6 +114,7 @@ function UserAcc() {
                 password: values.password,
                 email: values.email,
                 fullname: values.name,
+                gender: values.gender,
                 avatar: downloadURL,
               };
               handleUpdateById(newUserData);
@@ -117,7 +123,7 @@ function UserAcc() {
         );
       } catch (error) {
         console.error("Image Compression Error:", error);
-        errorMessage();
+        errorMessage("Lỗi nén ảnh");
         setSpinning(false);
       }
     } else {
@@ -126,6 +132,7 @@ function UserAcc() {
         password: values.password,
         email: values.email,
         fullname: values.name,
+        gender: values.gender,
       };
       handleUpdateById(newUserData);
     }
@@ -140,6 +147,7 @@ function UserAcc() {
       .then((response) => {
         const user = response.data;
         setUserData(user);
+        setGenderEdited(!!user.genderEdited);
         setFileList([
           {
             uid: "-1",
@@ -183,6 +191,7 @@ function UserAcc() {
             name: userData.fullname,
             email: userData.email,
             username: userData.username,
+            gender: userData.gender,
           }}
           onFinish={onFinish}
         >
@@ -199,6 +208,24 @@ function UserAcc() {
               allowClear
               size="large"
             />
+          </Form.Item>
+          <Form.Item
+            name="gender"
+            label="Giới tính"
+            rules={[{ required: true, message: "Vui lòng chọn giới tính!" }]}
+          >
+            {genderEdited ? (
+              <Input value={userData.gender} disabled readOnly size="large" />
+            ) : (
+              <Select
+                placeholder="Chọn giới tính"
+                size="large"
+                allowClear={false}
+              >
+                <Select.Option value="Nam">Nam</Select.Option>
+                <Select.Option value="Nữ">Nữ</Select.Option>
+              </Select>
+            )}
           </Form.Item>
           <Form.Item name="email" label="Email" rules={[{ required: true, message: "Vui lòng nhập Email!" }]}>
             <Input
