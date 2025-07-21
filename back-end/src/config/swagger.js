@@ -14,7 +14,7 @@ const options = {
       },
     ],
   },
-  apis: ['./routes/*.js'], // chỉ định nơi có comment Swagger
+  apis: ['./src/routes/*.js'],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
