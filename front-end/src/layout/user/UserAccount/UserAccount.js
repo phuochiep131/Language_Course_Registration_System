@@ -82,6 +82,9 @@ function UserAcc() {
   const onFinish = async (values) => {
     setSpinning(true);
 
+    // Xác định có nên gửi trường gender không
+    let shouldSendGender = !genderEdited;
+
     if (fileList[0] && checkChangeAvatar) {
       const file = fileList[0].originFileObj;
       const maxImageSize = 1024;
@@ -114,8 +117,8 @@ function UserAcc() {
                 password: values.password,
                 email: values.email,
                 fullname: values.name,
-                gender: values.gender,
                 avatar: downloadURL,
+                ...(shouldSendGender ? { gender: values.gender } : {}),
               };
               handleUpdateById(newUserData);
             });
@@ -132,7 +135,7 @@ function UserAcc() {
         password: values.password,
         email: values.email,
         fullname: values.name,
-        gender: values.gender,
+        ...(shouldSendGender ? { gender: values.gender } : {}),
       };
       handleUpdateById(newUserData);
     }
