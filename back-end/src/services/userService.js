@@ -32,6 +32,17 @@ const updateUserById = async (userId, data) => {
   if (data.role) user.role = data.role;
   if (data.avatar) user.avatar = data.avatar;
 
+  // Chỉ cho phép sửa giới tính 1 lần duy nhất
+  if (data.gender !== undefined) {
+    if (user.genderEdited) {
+      // Đã từng sửa rồi, không cho phép sửa nữa
+      return null;
+    } else {
+      user.gender = data.gender;
+      user.genderEdited = true;
+    }
+  }
+
   await user.save();
   return user;
 };

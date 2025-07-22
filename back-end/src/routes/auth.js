@@ -83,4 +83,57 @@ router.post('/login', authController.login);
  */
 router.get('/logout', authController.logout);
 
+/**
+ * @swagger
+ * /auth/forgot-password:
+ *   post:
+ *     summary: Quên mật khẩu
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Gửi yêu cầu thành công
+ *       400:
+ *         description: Lỗi đầu vào
+ */
+router.post('/forgot-password', authController.forgotPassword);
+
+/**
+ * @swagger
+ * /auth/reset-password:
+ *   post:
+ *     summary: Đặt lại mật khẩu
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - token
+ *               - password
+ *             properties:
+ *               token:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Đặt lại mật khẩu thành công
+ *       400:
+ *         description: Lỗi đầu vào
+ */
+router.post('/reset-password', authController.resetPassword);
+
 module.exports = router;

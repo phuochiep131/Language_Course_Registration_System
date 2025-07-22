@@ -76,7 +76,7 @@ const updateUserById = async (req, res) => {
     }
 
     const user = await userService.updateUserById(id, req.body);
-    if (!user) return res.status(404).json({ message: "Không tìm thấy user này" });
+    if (!user) return res.status(400).json({ message: "Bạn chỉ được phép sửa giới tính 1 lần duy nhất!" });
 
     res.json(user);
   } catch (error) {

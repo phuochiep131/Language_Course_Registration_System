@@ -92,6 +92,23 @@ function Register() {
                             required: true,
                             message: 'Vui lòng nhập họ và tên!',
                         },
+                        {
+                            validator: (_, value) => {
+                                if (!value) return Promise.resolve();
+
+                                if (/\d/.test(value)) 
+                                {
+                                    return Promise.reject("Họ và tên không được chứa ký tự số!");
+                                }
+
+                                if (/[^a-zA-ZÀ-Ỹà-ỹ\s]/.test(value))
+                                {
+                                    return Promise.reject("Họ và tên không được chứa ký tự đặc biệt!");
+                                }
+
+                                return Promise.resolve();
+                            }
+                        }
                     ]}
                 >
                     <Input prefix={<SmileOutlined className="site-form-item-icon" />} placeholder="Họ và tên" size="large" allowClear />
@@ -103,6 +120,7 @@ function Register() {
                             required: true,
                             message: 'Vui lòng nhập email!',
                         },
+                        { type: 'email', message: 'Email không hợp lệ!' }
                     ]}
                 >
                     <Input prefix={<MailOutlined className="site-form-item-icon" />} placeholder="Email" size="large" allowClear />
