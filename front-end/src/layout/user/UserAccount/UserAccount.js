@@ -1,5 +1,6 @@
 // src/components/layout/user/UserAccount/UserAccount.js
 import {
+  HomeOutlined,
   LockOutlined,
   MailOutlined,
   SmileOutlined,
@@ -117,6 +118,7 @@ function UserAcc() {
                 password: values.password,
                 email: values.email,
                 fullname: values.name,
+                address: values.address,
                 avatar: downloadURL,
                 ...(shouldSendGender ? { gender: values.gender } : {}),
               };
@@ -136,6 +138,7 @@ function UserAcc() {
         email: values.email,
         fullname: values.name,
         ...(shouldSendGender ? { gender: values.gender } : {}),
+        address: values.address,
       };
       handleUpdateById(newUserData);
     }
@@ -195,6 +198,7 @@ function UserAcc() {
             email: userData.email,
             username: userData.username,
             gender: userData.gender,
+            address: userData.address,
           }}
           onFinish={onFinish}
         >
@@ -238,14 +242,22 @@ function UserAcc() {
               size="large"
             />
           </Form.Item>
-          <Form.Item name="username" label="Tên đăng nhập" rules={[{ required: true, message: "Vui lòng nhập tên đăng nhập!" }]}>
+          {/* <Form.Item name="username" label="Tên đăng nhập" rules={[{ required: true, message: "Vui lòng nhập tên đăng nhập!" }]}>
             <Input
               prefix={<UserOutlined />}
               placeholder="Tên đăng nhập"
               allowClear
               size="large"
             />
-          </Form.Item>                   
+          </Form.Item>                    */}
+          <Form.Item name="address" label="Địa chỉ" rules={[{ required: true, message: "Vui lòng nhập địa chỉ!" }]}>
+            <Input
+              prefix={<HomeOutlined />}
+              placeholder="Địa chỉ"
+              allowClear
+              size="large"
+            />
+          </Form.Item>
           <Form.Item>
             <Button
               type="primary"
