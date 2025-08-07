@@ -63,11 +63,8 @@ const forgotPassword = async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: 'Không tìm thấy email này!' });
-    // Tạo token reset password, hết hạn 15 phút
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || 'secret', { expiresIn: '15m' });
-    // Link reset password
     const resetLink = `${process.env.CLIENT_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
-    // Gửi mail với HTML đẹp
     await transporter.sendMail({
       from: process.env.GMAIL_USER,
       to: email,
